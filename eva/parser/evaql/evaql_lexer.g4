@@ -156,6 +156,7 @@ UDF:						                'UDF';
 INPUT:                          'INPUT';
 OUTPUT:                         'OUTPUT';
 TYPE:                           'TYPE';
+CATEGORY:                       'CATEGORY';
 IMPL:                           'IMPL';
 
 // MATERIALIZED

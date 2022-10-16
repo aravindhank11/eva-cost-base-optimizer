@@ -60,9 +60,9 @@ class CreateUDFExecutor(AbstractExecutor):
             )
             logger.error(err_msg)
             raise RuntimeError(err_msg)
+        print("create_udf_executor.py::exec --> catalog_manager.create_udf")
         catalog_manager.create_udf(
-            self.node.name, impl_path, self.node.udf_type, io_list
-        )
+            self.node.name, impl_path, self.node.udf_type, self.node.udf_category, io_list)
         yield Batch(
             pd.DataFrame([f"UDF {self.node.name} successfully added to the database."])
         )

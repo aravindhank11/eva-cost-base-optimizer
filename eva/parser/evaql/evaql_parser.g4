@@ -71,10 +71,11 @@ createUdf
     : CREATE UDF
       ifNotExists?
       udfName
-      INPUT  createDefinitions
-      OUTPUT createDefinitions
-      TYPE   udfType
-      IMPL   udfImpl
+      INPUT    createDefinitions
+      OUTPUT   createDefinitions
+      TYPE     udfType
+      CATEGORY udfCategory
+      IMPL     udfImpl
     ;
 
 // Create Materialized View
@@ -93,6 +94,10 @@ udfName
 
 udfType
     : uid
+    ;
+
+udfCategory
+    : stringLiteral
     ;
 
 udfImpl

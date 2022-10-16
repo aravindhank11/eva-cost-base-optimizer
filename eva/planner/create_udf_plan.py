@@ -39,7 +39,9 @@ class CreateUDFPlan(AbstractPlan):
             This file should be placed in the data directory and
             the path provided should be relative to the eva dir.
         udf_type: str
-            udf type. it ca be object detection, classification etc.
+            udf type. it can be object detection, classification etc.
+        udf_category: str
+            udf category. it can be VehicleCount, VehicleCount etc.
     """
 
     def __init__(
@@ -50,6 +52,7 @@ class CreateUDFPlan(AbstractPlan):
         outputs: List[UdfIO],
         impl_file_path: Path,
         udf_type: str = None,
+        udf_category: str = None
     ):
         super().__init__(PlanOprType.CREATE_UDF)
         self._name = name
@@ -58,6 +61,8 @@ class CreateUDFPlan(AbstractPlan):
         self._outputs = outputs
         self._impl_path = impl_file_path
         self._udf_type = udf_type
+        self._udf_category = udf_category
+        print("create_udf_plan.py::CreateUDFPlan::__init__")
 
     @property
     def name(self):
@@ -83,6 +88,10 @@ class CreateUDFPlan(AbstractPlan):
     def udf_type(self):
         return self._udf_type
 
+    @property
+    def udf_category(self):
+        return self._udf_category
+
     def __hash__(self) -> int:
         return hash(
             (
@@ -92,5 +101,6 @@ class CreateUDFPlan(AbstractPlan):
                 tuple(self.outputs),
                 self.impl_path,
                 self.udf_type,
+                self.udf_category,
             )
         )

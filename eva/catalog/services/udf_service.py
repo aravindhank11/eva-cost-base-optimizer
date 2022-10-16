@@ -23,18 +23,20 @@ class UdfService(BaseService):
     def __init__(self):
         super().__init__(UdfMetadata)
 
-    def create_udf(self, name: str, impl_path: str, type: str) -> UdfMetadata:
+    def create_udf(self, name: str, impl_path: str, type: str, category: str) -> UdfMetadata:
         """Creates a new udf entry
 
         Arguments:
             name (str): name of the udf
             impl_path (str): path to the udf implementation relative to eva/udf
             type (str): udf operator kind, classification or detection or etc
+            category (str) : udf operator category: VehicleCount, ContainsCars, etc
 
         Returns:
             UdfMetadata: Returns the new entry created
         """
-        metadata = self.model(name, impl_path, type)
+        print("udf_service.py::create_udf --> self.model")
+        metadata = self.model(name, impl_path, type, category)
         metadata = metadata.save()
         return metadata
 

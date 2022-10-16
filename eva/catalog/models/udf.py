@@ -29,10 +29,12 @@ class UdfMetadata(BaseModel):
         "UdfIO", back_populates="_udf", cascade="all, delete, delete-orphan"
     )
 
-    def __init__(self, name: str, impl_file_path: str, type: str):
+    def __init__(self, name: str, impl_file_path: str, type: str, category: str):
         self._name = name
         self._impl_file_path = impl_file_path
         self._type = type
+        print("udf.py::UdfMetadata::__init__")
+        self._category = category
 
     @property
     def id(self):
@@ -50,6 +52,11 @@ class UdfMetadata(BaseModel):
     def type(self):
         return self._type
 
+    @property
+    def category(self):
+        print("udf.py::UdfMetadata::category")
+        return self._category
+
     def display_format(self):
         inputs = []
         outputs = []
@@ -60,17 +67,19 @@ class UdfMetadata(BaseModel):
                 inputs.append(col_string)
             else:
                 outputs.append(col_string)
+        print("udf.py::UdfMetadata::display_format")
         return {
             "name": self.name,
             "inputs": inputs,
             "outputs": outputs,
             "type": self.type,
+            "category": self.category,
             "impl": self.impl_file_path,
         }
 
     def __str__(self):
-        udf_str = "udf: ({}, {}, {})\n".format(
-            self.name, self.impl_file_path, self.type
+        udf_str = "udf: ({}, {}, {} {})\n".format(
+            self.name, self.impl_file_path, self.type, self.catgory
         )
         return udf_str
 
@@ -80,7 +89,8 @@ class UdfMetadata(BaseModel):
             and self.impl_file_path == other.impl_file_path
             and self.name == other.name
             and self.type == other.type
+            and self.category == other.category
         )
 
     def __hash__(self) -> int:
-        return hash((self.id, self.name, self.impl_file_path, self.type))
+        return hash((self.id, self.name, self.impl_file_path, self.type, self.category))

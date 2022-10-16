@@ -205,6 +205,7 @@ class CatalogManager(object):
         name: str,
         impl_file_path: str,
         type: str,
+        category: str,
         udf_io_list: List[UdfIO],
     ) -> UdfMetadata:
         """Creates an udf metadata object and udf_io objects and persists them
@@ -216,13 +217,16 @@ class CatalogManager(object):
                                  relative to eva/udf
             type(str): what kind of udf operator like classification,
                                                         detection etc
+            category(str): what category of udf operator like VehicleCount,
+                                                    ContainsCars, etc
             udf_io_list(List[UdfIO]): input/output info of this udf
 
         Returns:
             The persisted UdfMetadata object with the id field populated.
         """
 
-        metadata = self._udf_service.create_udf(name, impl_file_path, type)
+        print("catalog_manager.py::create_udf --> self._udf_service.create_udf")
+        metadata = self._udf_service.create_udf(name, impl_file_path, type, category)
         for udf_io in udf_io_list:
             udf_io.udf_id = metadata.id
         self._udf_io_service.add_udf_io(udf_io_list)

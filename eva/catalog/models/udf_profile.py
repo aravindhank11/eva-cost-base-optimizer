@@ -23,12 +23,23 @@ class UdfProfileMetadata(BaseModel):
 
     _batch_size = Column("batch_size", Integer)
     _time_taken = Column("time_taken", Integer)
+<<<<<<< HEAD
     _udf_id = Column("udf_id", Integer, ForeignKey("udf.id"))
 
     def __init__(self, udf_id: int, batch_size: int, time_taken: int):
         self._udf_id = udf_id
         self._batch_size = batch_size
         self._time_taken = time_taken
+=======
+    _accuracy = Column("accuracy", Float)
+    _udf_id = Column("udf_id", Integer, ForeignKey("udf.id"))
+
+    def __init__(self, udf_id: int, batch_size: int, time_taken: int, accuracy: float):
+        self._udf_id = udf_id
+        self._batch_size = batch_size
+        self._time_taken = time_taken
+        self._accuracy = accuracy
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
 
     @property
     def id(self):
@@ -46,11 +57,23 @@ class UdfProfileMetadata(BaseModel):
     def time_taken(self):
         return self._time_taken
 
+<<<<<<< HEAD
     def __str__(self):
         udf_profile_str = "udf_profile: ({}, {}, {}, {})\n".format(
             self.id, self.udf_id, self.batch_size, self.time_taken
         )
         return udf_profile_str
+=======
+    @property
+    def accuracy(self):
+        return self._accuracy
+
+    def __str__(self):
+        udf_profile_str = "udf_profile: ({}, {}, {}, {} {})\n".format(
+            self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy
+        )
+        return udf_str
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
 
     def __eq__(self, other):
         return (
@@ -58,7 +81,15 @@ class UdfProfileMetadata(BaseModel):
             and self.udf_id == other.udf_id
             and self.batch_size == other.batch_size
             and self.time_taken == other.time_taken
+<<<<<<< HEAD
         )
 
     def __hash__(self) -> int:
         return hash((self.id, self.udf_id, self.batch_size, self.time_taken))
+=======
+            and self.accuracy == other.accuracy
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy))
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it

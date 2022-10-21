@@ -27,7 +27,10 @@ from eva.catalog.services.df_service import DatasetService
 from eva.catalog.services.udf_io_service import UdfIOService
 from eva.catalog.services.udf_service import UdfService
 from eva.catalog.services.udf_profile_service import UdfProfileService
+<<<<<<< HEAD
 from eva.catalog.services.udf_profiler_sample_service import UdfProfilerSampleService
+=======
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
 from eva.parser.create_statement import ColConstraintInfo
 from eva.parser.table_ref import TableInfo
 from eva.utils.logging_manager import logger
@@ -50,7 +53,10 @@ class CatalogManager(object):
         self._column_service = DatasetColumnService()
         self._udf_service = UdfService()
         self._udf_profile_service = UdfProfileService()
+<<<<<<< HEAD
         self._udf_profiler_sample_service = UdfProfilerSampleService()
+=======
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
         self._udf_io_service = UdfIOService()
 
     def reset(self):
@@ -239,7 +245,11 @@ class CatalogManager(object):
         self,
         udf_id: int,
         list_of_metrics_objs: List[Metrics],
+<<<<<<< HEAD
     ) -> None:
+=======
+    ) -> UdfProfileMetadata:
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
         """
         Creates an udf_profile object and persists them
         Arguments:
@@ -248,6 +258,7 @@ class CatalogManager(object):
         Returns:
             None
         """
+<<<<<<< HEAD
         for metrics_obj in list_of_metrics_objs:
             metadata = self._udf_profile_service.create_udf_profile(udf_id, metrics_obj)
         return
@@ -284,6 +295,13 @@ class CatalogManager(object):
             UdfProfilerSample object with file path to sample video and validation file
         """
         return self._udf_profiler_sample_service.get_udf_profiler_sample_by_type(udf_type)[0]
+=======
+
+        for metrics_obj in list_of_metrics_objs:
+            metadata = self._udf_profile_service.create_udf_profile(udf_id, metrics_obj)
+
+        return
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
 
     def get_udf_by_name(self, name: str) -> UdfMetadata:
         """

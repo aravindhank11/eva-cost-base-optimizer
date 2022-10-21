@@ -19,7 +19,7 @@ from pathlib import Path
 from eva.utils.metrics import Metrics
 
 class Profiler:
-    def __init__(self, filepath: str, classname: str, samplepath: str, validationpath: str):
+    def __init__(self, filepath: str, classname: str):
         """
         * Profiler is supposed to be called post basic validation
         * So object creation is guaranteed
@@ -31,13 +31,10 @@ class Profiler:
         spec.loader.exec_module(module)
         self._classobj = getattr(module, classname)
 
-        self._samplepath = samplepath
-        self._validationpath = validationpath
-
     def run(self):
         """
         * Profiles the given UDF for various batch sizes
-        * Gathers metrics related to time_taken
+        * Gathers metrics related to time_taken and accuracy
 
         Param: None
 
@@ -46,6 +43,6 @@ class Profiler:
         # TODO: Implement the actual logic
         # Use self._classobj's methods to run for various batch sizes
 
-        return [Metrics(1, 25),
-                Metrics(2, 45),
-                Metrics(5, 110)]
+        return [Metrics(1, 25, 100),
+                Metrics(2, 45, 100),
+                Metrics(5, 110, 100)]

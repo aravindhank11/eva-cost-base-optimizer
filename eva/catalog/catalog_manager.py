@@ -19,14 +19,17 @@ from eva.catalog.models.base_model import drop_db, init_db
 from eva.catalog.models.df_column import DataFrameColumn
 from eva.catalog.models.df_metadata import DataFrameMetadata
 from eva.catalog.models.udf import UdfMetadata
+from eva.catalog.models.udf_profile import UdfProfileMetadata
 from eva.catalog.models.udf_io import UdfIO
 from eva.catalog.services.df_column_service import DatasetColumnService
 from eva.catalog.services.df_service import DatasetService
 from eva.catalog.services.udf_io_service import UdfIOService
 from eva.catalog.services.udf_service import UdfService
+from eva.catalog.services.udf_profile_service import UdfProfileService
 from eva.parser.create_statement import ColConstraintInfo
 from eva.parser.table_ref import TableInfo
 from eva.utils.logging_manager import logger
+from eva.utils.metrics import Metrics
 
 
 class CatalogManager(object):
@@ -44,6 +47,7 @@ class CatalogManager(object):
         self._dataset_service = DatasetService()
         self._column_service = DatasetColumnService()
         self._udf_service = UdfService()
+        self._udf_profile_service = UdfProfileService()
         self._udf_io_service = UdfIOService()
 
     def reset(self):
@@ -228,6 +232,25 @@ class CatalogManager(object):
         self._udf_io_service.add_udf_io(udf_io_list)
         return metadata
 
+    def create_udf_profile(
+        self,
+        udf_id: int,
+        list_of_metrics_objs: List[Metrics],
+    ) -> UdfProfileMetadata:
+        """
+        Creates an udf_profile object and persists them
+        Arguments:
+            metrics:(List[Metric]): The profiled metrics of UDFs
+
+        Returns:
+            None
+        """
+
+        for metrics_obj in list_of_metrics_objs:
+            metadata = self._udf_profile_service.create_udf_profile(udf_id, metrics_obj)
+
+        return
+
     def get_udf_by_name(self, name: str) -> UdfMetadata:
         """
         Get the UDF information based on name.
@@ -284,7 +307,9 @@ class CatalogManager(object):
         Returns:
            True if successfully deleted else False
         """
-        return self._udf_service.drop_udf_by_name(udf_name)
+        udf_metadata = self._udf_service.udf_by_name(udf_name)
+        profile_drop_status = self._udf_profile_service.drop_udf_profile(udf_metadata.id)
+        return profile_drop_status and self._udf_service.drop_udf_by_name(udf_name)
 
     def rename_table(self, new_name: TableInfo, curr_table: TableInfo):
         return self._dataset_service.rename_dataset_by_name(

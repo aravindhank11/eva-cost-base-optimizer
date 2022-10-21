@@ -20,6 +20,7 @@ from eva.models.storage.batch import Batch
 from eva.planner.create_udf_plan import CreateUDFPlan
 from eva.utils.generic_utils import path_to_class
 from eva.utils.logging_manager import logger
+from eva.utils.profiler import Profiler
 
 
 class CreateUDFExecutor(AbstractExecutor):
@@ -35,6 +36,7 @@ class CreateUDFExecutor(AbstractExecutor):
         Calls the catalog to create udf metadata.
         """
         catalog_manager = CatalogManager()
+
         # check catalog if it already has this udf entry
         if catalog_manager.get_udf_by_name(self.node.name):
             if self.node.if_not_exists:
@@ -50,6 +52,7 @@ class CreateUDFExecutor(AbstractExecutor):
         io_list.extend(self.node.inputs)
         io_list.extend(self.node.outputs)
         impl_path = self.node.impl_path.absolute().as_posix()
+
         # check if we can create the udf object
         try:
             path_to_class(impl_path, self.node.name)()
@@ -60,9 +63,19 @@ class CreateUDFExecutor(AbstractExecutor):
             )
             logger.error(err_msg)
             raise RuntimeError(err_msg)
-        catalog_manager.create_udf(
+
+        # create the actual udf
+        udf_metadata = catalog_manager.create_udf(
             self.node.name, impl_path, self.node.udf_type, io_list
         )
+
+        # Profile the UDF
+        profiler = Profiler(impl_path, self.node.name)
+        metrics = profiler.run()
+
+        # Insert the profiled UDF to catalog
+        catalog_manager.create_udf_profile(udf_metadata.id, metrics)
+
         yield Batch(
             pd.DataFrame([f"UDF {self.node.name} successfully added to the database."])
         )

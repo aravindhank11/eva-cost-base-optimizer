@@ -21,6 +21,10 @@ from eva.planner.create_udf_plan import CreateUDFPlan
 from eva.utils.generic_utils import path_to_class
 from eva.utils.logging_manager import logger
 from eva.utils.profiler import Profiler
+<<<<<<< HEAD
+=======
+
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
 
 class CreateUDFExecutor(AbstractExecutor):
     def __init__(self, node: CreateUDFPlan):

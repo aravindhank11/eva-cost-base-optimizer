@@ -28,7 +28,11 @@ class UdfProfileService(BaseService):
         """Creates a new udf profile entry
 
         Arguments:
+<<<<<<< HEAD
             udf_id (int): udf_id corresponding to the metrics
+=======
+            udf_id (str): udf_id corresponding to the metrics
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
             metrics: Metrics corresponding to the udf
 
         Returns:
@@ -36,7 +40,12 @@ class UdfProfileService(BaseService):
         """
         metadata = self.model(udf_id,
                               metrics.batch_size,
+<<<<<<< HEAD
                               metrics.time_taken)
+=======
+                              metrics.time_taken,
+                              metrics.accuracy)
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
         metadata = metadata.save()
         self.print_all_profile("Post Inserting {}".format(udf_id))
         return metadata
@@ -45,7 +54,11 @@ class UdfProfileService(BaseService):
         """Drop a udf profile entry from the catalog udfprofilemetadata
 
         Arguments:
+<<<<<<< HEAD
             udf_id (int): udf id to be deleted
+=======
+            id (int): udf id to be deleted
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
 
         Returns:
             True if successfully deleted else False
@@ -66,11 +79,21 @@ class UdfProfileService(BaseService):
         print(when)
         list_of_udf_profile_metadata = self.get_all_profiles()
         for udf_profile_metadata in list_of_udf_profile_metadata:
+<<<<<<< HEAD
             print("  {} {} {} {}".format(
                 udf_profile_metadata._udf_id,
                 udf_profile_metadata._id,
                 udf_profile_metadata._batch_size,
                 udf_profile_metadata._time_taken,
+=======
+            print("  {} {} {} {} {} {}".format(
+                udf_profile_metadata._udf_id,
+                udf_profile_metadata._id,
+                udf_profile_metadata._udf_id,
+                udf_profile_metadata._batch_size,
+                udf_profile_metadata._time_taken,
+                udf_profile_metadata._accuracy,
+>>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
             ))
 
     def get_all_profiles(self):

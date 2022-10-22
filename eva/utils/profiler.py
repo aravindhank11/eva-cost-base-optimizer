@@ -48,15 +48,16 @@ class Profiler:
         # TODO: Implement the actual logic
         # Use self._classobj's methods to run for various batch sizes
 
+        metrics_list = []
         vidcap = cv2.VideoCapture('mnist.mp4')
-        success,image = vidcap.read()
-        batch_sizes=[1]
+        _,image = vidcap.read()
+        batch_sizes=[1, 10, 100, 1000]
         for batch in batch_sizes:
             metrics_obj = Metrics()
             frame_arr = np.zeros(shape=(batch, 28,28,3))
             for i in range(batch):
                 frame_arr[i] = image
-                success,image = vidcap.read()
+                _,image = vidcap.read()
         
             batched_tensor = torch.tensor(frame_arr)
             start_time = time.time()
@@ -65,8 +66,8 @@ class Profiler:
             metrics_obj.batch_size=batch
             #TO DO
             metrics_obj.accuracy=100 
-            
 
-        return [Metrics(1, 25, 100),
-                Metrics(2, 45, 100),
-                Metrics(5, 110, 100)]
+            
+            metrics_list.append(metrics_obj)
+
+        return metrics_list

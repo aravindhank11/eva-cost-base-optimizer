@@ -283,7 +283,7 @@ class CatalogManager(object):
         Returns:
             UdfProfilerSample object with file path to sample video and validation file
         """
-        return self._udf_profiler_sample_service.get_udf_profiler_sample_by_type(udf_type)
+        return self._udf_profiler_sample_service.get_udf_profiler_sample_by_type(udf_type)[0]
 
     def get_udf_by_name(self, name: str) -> UdfMetadata:
         """

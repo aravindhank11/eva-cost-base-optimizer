@@ -18,6 +18,11 @@ from pathlib import Path
 
 from eva.utils.metrics import Metrics
 
+import cv2
+import torch
+import numpy as np
+import time
+
 class Profiler:
     def __init__(self, filepath: str, classname: str):
         """
@@ -42,6 +47,25 @@ class Profiler:
         """
         # TODO: Implement the actual logic
         # Use self._classobj's methods to run for various batch sizes
+
+        vidcap = cv2.VideoCapture('mnist.mp4')
+        success,image = vidcap.read()
+        batch_sizes=[1]
+        for batch in batch_sizes:
+            metrics_obj = Metrics()
+            frame_arr = np.zeros(shape=(batch, 28,28,3))
+            for i in range(batch):
+                frame_arr[i] = image
+                success,image = vidcap.read()
+        
+            batched_tensor = torch.tensor(frame_arr)
+            start_time = time.time()
+            self._classobj.forward(batched_tensor)
+            metrics_obj.time_taken=time.time() - start_time
+            metrics_obj.batch_size=batch
+            #TO DO
+            metrics_obj.accuracy=100 
+            
 
         return [Metrics(1, 25, 100),
                 Metrics(2, 45, 100),

@@ -19,7 +19,7 @@ from pathlib import Path
 from eva.utils.metrics import Metrics
 
 class Profiler:
-    def __init__(self, filepath: str, classname: str):
+    def __init__(self, filepath: str, classname: str, samplepath: str, validationpath: str):
         """
         * Profiler is supposed to be called post basic validation
         * So object creation is guaranteed
@@ -30,6 +30,9 @@ class Profiler:
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         self._classobj = getattr(module, classname)
+
+        self._samplepath = samplepath
+        self._validationpath = validationpath
 
     def run(self):
         """

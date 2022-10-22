@@ -48,6 +48,7 @@ class CatalogManager(object):
         self._column_service = DatasetColumnService()
         self._udf_service = UdfService()
         self._udf_profile_service = UdfProfileService()
+        self._udf_profiler_sample_service = UdfProfilerSampleService()
         self._udf_io_service = UdfIOService()
 
     def reset(self):
@@ -245,11 +246,44 @@ class CatalogManager(object):
         Returns:
             None
         """
-
+        # TODO: check return type and fix func declaration
         for metrics_obj in list_of_metrics_objs:
             metadata = self._udf_profile_service.create_udf_profile(udf_id, metrics_obj)
 
         return
+    
+    def create_udf_profiler_sample(
+        self,
+        udf_type: str,
+        sample_path: str,
+        validation_path: str
+    ) -> None:
+        """
+        Creates and persists UDFProfilerSample object
+
+        Arguments:
+             udf_type (str): type of the UDF. e.g.: ObjectDetector
+             sample_path (str): path to sample video file
+             validation_path (str): path to sample validation CSV file
+        
+        Returns:
+             None
+        """
+        
+        metadata = self._udf_profiler_sample_service.create_udf_profiler_sample(udf_type, sample_path,validation_path)
+        return metadata
+    
+    def get_udf_profiler_sample_by_type(self, udf_type: str) -> UdfProfilerSample:
+        """
+        Get the UDF Sample for profiler by type
+
+        Arguments:
+             udf_type (str): UDF type. e.g. ObjectDetector
+
+        Returns:
+            UdfProfilerSample object with file path to sample video and validation file
+        """
+        return self._udf_profiler_sample_service.get_udf_profiler_sample_by_type(udf_type)
 
     def get_udf_by_name(self, name: str) -> UdfMetadata:
         """

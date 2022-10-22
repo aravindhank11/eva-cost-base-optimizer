@@ -35,7 +35,7 @@ class Profiler:
         spec = importlib.util.spec_from_file_location(abs_path.stem, abs_path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        self._classobj = getattr(module, classname)
+        self._classobj = getattr(module, classname)()
 
     def run(self):
         """
@@ -59,10 +59,9 @@ class Profiler:
             for i in range(batch):
                 frame_arr[i] = image
                 _,image = vidcap.read()
-        
             batched_tensor = torch.tensor(frame_arr)
             start_time = time.time()
-            self._classobj._get_predictions(batched_tensor)
+            self._classobj.forward(batched_tensor)
             time_taken=time.time() - start_time
             batch_size=batch
             #TO DO

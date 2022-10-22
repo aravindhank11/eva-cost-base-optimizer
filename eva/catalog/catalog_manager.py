@@ -19,13 +19,13 @@ from eva.catalog.models.base_model import drop_db, init_db
 from eva.catalog.models.df_column import DataFrameColumn
 from eva.catalog.models.df_metadata import DataFrameMetadata
 from eva.catalog.models.udf import UdfMetadata
-from eva.catalog.models.udf_profile import UdfProfileMetadata
 from eva.catalog.models.udf_io import UdfIO
+from eva.catalog.models.udf_profile import UdfProfileMetadata
 from eva.catalog.services.df_column_service import DatasetColumnService
 from eva.catalog.services.df_service import DatasetService
 from eva.catalog.services.udf_io_service import UdfIOService
-from eva.catalog.services.udf_service import UdfService
 from eva.catalog.services.udf_profile_service import UdfProfileService
+from eva.catalog.services.udf_service import UdfService
 from eva.parser.create_statement import ColConstraintInfo
 from eva.parser.table_ref import TableInfo
 from eva.utils.logging_manager import logger
@@ -308,7 +308,9 @@ class CatalogManager(object):
            True if successfully deleted else False
         """
         udf_metadata = self._udf_service.udf_by_name(udf_name)
-        profile_drop_status = self._udf_profile_service.drop_udf_profile(udf_metadata.id)
+        profile_drop_status = self._udf_profile_service.drop_udf_profile(
+            udf_metadata.id
+        )
         return profile_drop_status and self._udf_service.drop_udf_by_name(udf_name)
 
     def rename_table(self, new_name: TableInfo, curr_table: TableInfo):

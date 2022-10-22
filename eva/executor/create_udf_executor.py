@@ -73,7 +73,6 @@ class CreateUDFExecutor(AbstractExecutor):
         )
 
         # Profile the UDF
-
         profiler = Profiler(impl_path, self.node.name)
         metrics = profiler.run()
         print("received {}".format(metrics))

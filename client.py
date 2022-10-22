@@ -13,7 +13,7 @@ def exec(cmd, get_response=False, print_needed=True):
         return response
 
 # Get Cursor
-connection = connect(host = '0.0.0.0', port = 5432) # hostname, port of the server where EVADB is running
+connection = connect(host = '127.0.0.0', port = 5432) # hostname, port of the server where EVADB is running
 cursor = connection.cursor()
 
 # Drop a UDF

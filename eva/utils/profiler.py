@@ -22,6 +22,7 @@ import cv2
 import torch
 import numpy as np
 import time
+import pandas as pd
 
 class Profiler:
     def __init__(self, filepath: str, classname: str):
@@ -47,13 +48,13 @@ class Profiler:
         """
         # TODO: Implement the actual logic
         # Use self._classobj's methods to run for various batch sizes
-
+        print("testing")
         metrics_list = []
         vidcap = cv2.VideoCapture('mnist.mp4')
         _,image = vidcap.read()
         batch_sizes=[1, 10, 100, 1000]
         for batch in batch_sizes:
-            metrics_obj = Metrics()
+            # metrics_obj = Metrics()
             frame_arr = np.zeros(shape=(batch, 28,28,3))
             for i in range(batch):
                 frame_arr[i] = image
@@ -61,12 +62,12 @@ class Profiler:
         
             batched_tensor = torch.tensor(frame_arr)
             start_time = time.time()
-            self._classobj.forward(batched_tensor)
-            metrics_obj.time_taken=time.time() - start_time
-            metrics_obj.batch_size=batch
+            self._classobj._get_predictions(batched_tensor)
+            time_taken=time.time() - start_time
+            batch_size=batch
             #TO DO
-            metrics_obj.accuracy=100 
-
+            accuracy=100 
+            metrics_obj = Metrics(time_taken, accuracy, batch_size)
             metrics_list.append(metrics_obj)
 
         return metrics_list

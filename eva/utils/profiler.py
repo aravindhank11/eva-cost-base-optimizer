@@ -67,7 +67,6 @@ class Profiler:
             #TO DO
             metrics_obj.accuracy=100 
 
-            
             metrics_list.append(metrics_obj)
 
         return metrics_list

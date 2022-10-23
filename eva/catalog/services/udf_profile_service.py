@@ -48,11 +48,13 @@ class UdfProfileService(BaseService):
         """
         return_val = True
         try:
-            list_of_udf_profile_metadata = self.model.query.filter(self.model._udf_id == udf_id)
+            list_of_udf_profile_metadata = self.model.query.filter(
+                self.model._udf_id == udf_id
+            )
             for udf_profile_metadata in list_of_udf_profile_metadata:
                 udf_profile_metadata.delete()
         except Exception:
-            logger.exception("Delete udf Profile failed for id={}".format(name))
+            logger.exception("Delete udf Profile failed for id={}".format(udf_id))
             return_val = False
 
         self.print_all_profile("Post Dropping {}".format(udf_id))

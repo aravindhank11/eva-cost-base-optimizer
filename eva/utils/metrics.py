@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 class Metrics:
     def __init__(self, batch_size:int, time_taken:int):
         self._batch_size = batch_size

@@ -12,8 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from sqlalchemy import Column, String, Integer, ForeignKey, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Float, ForeignKey, Integer
 
 from eva.catalog.models.base_model import BaseModel
 
@@ -23,23 +22,12 @@ class UdfProfileMetadata(BaseModel):
 
     _batch_size = Column("batch_size", Integer)
     _time_taken = Column("time_taken", Integer)
-<<<<<<< HEAD
     _udf_id = Column("udf_id", Integer, ForeignKey("udf.id"))
 
     def __init__(self, udf_id: int, batch_size: int, time_taken: int):
         self._udf_id = udf_id
         self._batch_size = batch_size
         self._time_taken = time_taken
-=======
-    _accuracy = Column("accuracy", Float)
-    _udf_id = Column("udf_id", Integer, ForeignKey("udf.id"))
-
-    def __init__(self, udf_id: int, batch_size: int, time_taken: int, accuracy: float):
-        self._udf_id = udf_id
-        self._batch_size = batch_size
-        self._time_taken = time_taken
-        self._accuracy = accuracy
->>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
 
     @property
     def id(self):
@@ -72,8 +60,12 @@ class UdfProfileMetadata(BaseModel):
         udf_profile_str = "udf_profile: ({}, {}, {}, {} {})\n".format(
             self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy
         )
+<<<<<<< HEAD
         return udf_str
 >>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
+=======
+        return udf_profile_str
+>>>>>>> Fix linting issues when running test.sh
 
     def __eq__(self, other):
         return (
@@ -91,5 +83,11 @@ class UdfProfileMetadata(BaseModel):
         )
 
     def __hash__(self) -> int:
+<<<<<<< HEAD
         return hash((self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy))
 >>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
+=======
+        return hash(
+            (self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy)
+        )
+>>>>>>> Fix linting issues when running test.sh

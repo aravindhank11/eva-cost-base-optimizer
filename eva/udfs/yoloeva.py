@@ -39,7 +39,7 @@ except ImportError as e:
 
 
 
-class yoloeva(PytorchAbstractClassifierUDF):
+class Yoloeva(PytorchAbstractClassifierUDF):
 
     @property
     def name(self) -> str:

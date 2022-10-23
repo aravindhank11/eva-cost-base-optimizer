@@ -155,8 +155,8 @@ class yoloeva(PytorchAbstractClassifierUDF):
 
     def forward(self, frames: Tensor) -> pd.DataFrame:
 
-         predictions = self.model(frames)
-         outcome = pd.DataFrame()
+        predictions = self.model(frames)
+        outcome = pd.DataFrame()
 
         for prediction in predictions:
             pred_class = [

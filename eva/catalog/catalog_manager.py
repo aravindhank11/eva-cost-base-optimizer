@@ -247,7 +247,7 @@ class CatalogManager(object):
         """
 
         for metrics_obj in list_of_metrics_objs:
-            metadata = self._udf_profile_service.create_udf_profile(udf_id, metrics_obj)
+            self._udf_profile_service.create_udf_profile(udf_id, metrics_obj)
 
         return
 

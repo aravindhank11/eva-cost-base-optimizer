@@ -34,10 +34,9 @@ class UdfProfileService(BaseService):
         Returns:
             UdfMetadata: Returns the new entry created
         """
-        metadata = self.model(udf_id,
-                              metrics.batch_size,
-                              metrics.time_taken,
-                              metrics.accuracy)
+        metadata = self.model(
+            udf_id, metrics.batch_size, metrics.time_taken, metrics.accuracy
+        )
         metadata = metadata.save()
         self.print_all_profile("Post Inserting {}".format(udf_id))
         return metadata
@@ -53,11 +52,13 @@ class UdfProfileService(BaseService):
         """
         return_val = True
         try:
-            list_of_udf_profile_metadata = self.model.query.filter(self.model._udf_id == udf_id)
+            list_of_udf_profile_metadata = self.model.query.filter(
+                self.model._udf_id == udf_id
+            )
             for udf_profile_metadata in list_of_udf_profile_metadata:
                 udf_profile_metadata.delete()
         except Exception:
-            logger.exception("Delete udf Profile failed for id={}".format(name))
+            logger.exception("Delete udf Profile failed for id={}".format(udf_id))
             return_val = False
 
         self.print_all_profile("Post Dropping {}".format(udf_id))
@@ -67,14 +68,16 @@ class UdfProfileService(BaseService):
         print(when)
         list_of_udf_profile_metadata = self.get_all_profiles()
         for udf_profile_metadata in list_of_udf_profile_metadata:
-            print("  {} {} {} {} {} {}".format(
-                udf_profile_metadata._udf_id,
-                udf_profile_metadata._id,
-                udf_profile_metadata._udf_id,
-                udf_profile_metadata._batch_size,
-                udf_profile_metadata._time_taken,
-                udf_profile_metadata._accuracy,
-            ))
+            print(
+                "  {} {} {} {} {} {}".format(
+                    udf_profile_metadata._udf_id,
+                    udf_profile_metadata._id,
+                    udf_profile_metadata._udf_id,
+                    udf_profile_metadata._batch_size,
+                    udf_profile_metadata._time_taken,
+                    udf_profile_metadata._accuracy,
+                )
+            )
 
     def get_all_profiles(self):
         try:

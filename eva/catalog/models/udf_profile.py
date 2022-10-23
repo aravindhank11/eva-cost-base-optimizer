@@ -12,8 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from sqlalchemy import Column, String, Integer, ForeignKey, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Float, ForeignKey, Integer
 
 from eva.catalog.models.base_model import BaseModel
 
@@ -56,7 +55,7 @@ class UdfProfileMetadata(BaseModel):
         udf_profile_str = "udf_profile: ({}, {}, {}, {} {})\n".format(
             self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy
         )
-        return udf_str
+        return udf_profile_str
 
     def __eq__(self, other):
         return (
@@ -68,4 +67,6 @@ class UdfProfileMetadata(BaseModel):
         )
 
     def __hash__(self) -> int:
-        return hash((self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy))
+        return hash(
+            (self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy)
+        )

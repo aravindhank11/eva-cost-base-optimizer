@@ -91,5 +91,5 @@ class Profiler:
             accuracy = (correct_pred/data.size) * 100
             metrics_obj = Metrics(time_taken, accuracy, batch_size)
             metrics_list.append(metrics_obj)
-        print(metrics_list)
+        # print(metrics_list)
         return metrics_list

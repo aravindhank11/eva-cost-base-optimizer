@@ -72,9 +72,10 @@ class CreateUDFExecutor(AbstractExecutor):
 
         profiler = Profiler(impl_path, self.node.name)
         metrics = profiler.run()
+        print("received {}".format(metrics))
 
-        # # Insert the profiled UDF to catalog
-        # catalog_manager.create_udf_profile(udf_metadata.id, metrics)
+        # Insert the profiled UDF to catalog
+        catalog_manager.create_udf_profile(udf_metadata.id, metrics)
 
         yield Batch(
             pd.DataFrame([f"UDF {self.node.name} successfully added to the database."])

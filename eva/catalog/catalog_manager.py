@@ -21,11 +21,13 @@ from eva.catalog.models.df_metadata import DataFrameMetadata
 from eva.catalog.models.udf import UdfMetadata
 from eva.catalog.models.udf_profile import UdfProfileMetadata
 from eva.catalog.models.udf_io import UdfIO
+from eva.catalog.models.udf_profiler_sample import UdfProfilerSample
 from eva.catalog.services.df_column_service import DatasetColumnService
 from eva.catalog.services.df_service import DatasetService
 from eva.catalog.services.udf_io_service import UdfIOService
 from eva.catalog.services.udf_service import UdfService
 from eva.catalog.services.udf_profile_service import UdfProfileService
+from eva.catalog.services.udf_profiler_sample_service import UdfProfilerSampleService
 from eva.parser.create_statement import ColConstraintInfo
 from eva.parser.table_ref import TableInfo
 from eva.utils.logging_manager import logger
@@ -48,6 +50,7 @@ class CatalogManager(object):
         self._column_service = DatasetColumnService()
         self._udf_service = UdfService()
         self._udf_profile_service = UdfProfileService()
+        self._udf_profiler_sample_service = UdfProfilerSampleService()
         self._udf_io_service = UdfIOService()
 
     def reset(self):
@@ -236,7 +239,7 @@ class CatalogManager(object):
         self,
         udf_id: int,
         list_of_metrics_objs: List[Metrics],
-    ) -> UdfProfileMetadata:
+    ) -> None:
         """
         Creates an udf_profile object and persists them
         Arguments:
@@ -245,11 +248,42 @@ class CatalogManager(object):
         Returns:
             None
         """
-
         for metrics_obj in list_of_metrics_objs:
             metadata = self._udf_profile_service.create_udf_profile(udf_id, metrics_obj)
-
         return
+    
+    def create_udf_profiler_sample(
+        self,
+        udf_type: str,
+        sample_path: str,
+        validation_path: str
+    ) -> None:
+        """
+        Creates and persists UDFProfilerSample object
+
+        Arguments:
+             udf_type (str): type of the UDF. e.g.: ObjectDetector
+             sample_path (str): path to sample video file
+             validation_path (str): path to sample validation CSV file
+        
+        Returns:
+             None
+        """
+        
+        metadata = self._udf_profiler_sample_service.create_udf_profiler_sample(udf_type, sample_path,validation_path)
+        return metadata
+    
+    def get_udf_profiler_sample_by_type(self, udf_type: str) -> UdfProfilerSample:
+        """
+        Get the UDF Sample for profiler by type
+
+        Arguments:
+             udf_type (str): UDF type. e.g. ObjectDetector
+
+        Returns:
+            UdfProfilerSample object with file path to sample video and validation file
+        """
+        return self._udf_profiler_sample_service.get_udf_profiler_sample_by_type(udf_type)[0]
 
     def get_udf_by_name(self, name: str) -> UdfMetadata:
         """

@@ -70,7 +70,8 @@ class CreateUDFExecutor(AbstractExecutor):
         )
 
         # Profile the UDF
-        profiler = Profiler(impl_path, self.node.name)
+        sample = catalog_manager.get_udf_profiler_sample_by_type(self.node.udf_type)
+        profiler = Profiler(impl_path, self.node.name, sample.sample_path, sample.validation_path)
         metrics = profiler.run()
 
         # Insert the profiled UDF to catalog

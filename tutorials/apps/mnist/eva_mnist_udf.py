@@ -42,11 +42,11 @@ class MnistCNN(PytorchAbstractClassifierUDF):
         for prediction in predictions:
             label = self.as_numpy(prediction.data.argmax())
             outcome = outcome.append({"label" : str(label)}, ignore_index=True)
-        print(outcome)
+        # print(outcome)
         return outcome
     def forward(self, frames: Tensor) -> pd.DataFrame:
-        print("passing")
-        pass
+        print("in frwd")
+        return self._get_predictions(frames)
 
     def setup(self, threshold=0.85):
         pass

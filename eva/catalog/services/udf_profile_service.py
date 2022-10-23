@@ -69,8 +69,7 @@ class UdfProfileService(BaseService):
         list_of_udf_profile_metadata = self.get_all_profiles()
         for udf_profile_metadata in list_of_udf_profile_metadata:
             print(
-                "  {} {} {} {} {} {}".format(
-                    udf_profile_metadata._udf_id,
+                "  {} {} {} {} {}".format(
                     udf_profile_metadata._id,
                     udf_profile_metadata._udf_id,
                     udf_profile_metadata._batch_size,

@@ -21,11 +21,13 @@ from eva.catalog.models.df_metadata import DataFrameMetadata
 from eva.catalog.models.udf import UdfMetadata
 from eva.catalog.models.udf_profile import UdfProfileMetadata
 from eva.catalog.models.udf_io import UdfIO
+from eva.catalog.models.udf_profiler_sample import UdfProfilerSample
 from eva.catalog.services.df_column_service import DatasetColumnService
 from eva.catalog.services.df_service import DatasetService
 from eva.catalog.services.udf_io_service import UdfIOService
 from eva.catalog.services.udf_service import UdfService
 from eva.catalog.services.udf_profile_service import UdfProfileService
+from eva.catalog.services.udf_profiler_sample_service import UdfProfilerSampleService
 from eva.parser.create_statement import ColConstraintInfo
 from eva.parser.table_ref import TableInfo
 from eva.utils.logging_manager import logger

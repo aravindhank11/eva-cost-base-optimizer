@@ -14,7 +14,7 @@
 # limitations under the License.
 from sqlalchemy.orm.exc import NoResultFound
 
-from eva.catalog.models.udf_profile import UdfProfilerSample
+from eva.catalog.models.udf_profiler_sample import UdfProfilerSample
 from eva.catalog.services.base_service import BaseService
 from eva.utils.logging_manager import logger
 from eva.utils.metrics import Metrics

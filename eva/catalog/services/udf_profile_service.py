@@ -102,8 +102,7 @@ class UdfProfileService(BaseService):
             ))
 =======
             print(
-                "  {} {} {} {} {} {}".format(
-                    udf_profile_metadata._udf_id,
+                "  {} {} {} {} {}".format(
                     udf_profile_metadata._id,
                     udf_profile_metadata._udf_id,
                     udf_profile_metadata._batch_size,

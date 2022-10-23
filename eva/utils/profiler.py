@@ -20,6 +20,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 import torch
+import pandas as pd
 
 from eva.utils.metrics import Metrics
 
@@ -50,15 +51,21 @@ class Profiler:
         # Use self._classobj's methods to run for various batch sizes
         print("testing")
         metrics_list = []
-        vidcap = cv2.VideoCapture("/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4")
+        # vidcap = cv2.VideoCapture("/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4")
+        vidcap = cv2.VideoCapture('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4')
         _, image = vidcap.read()
         print(image.shape)
 
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image = gray.reshape(1,28,28)
         print(gray.shape)
-        batch_sizes = [1,5]
-        for batch in batch_sizes:
+
+        df = pd.read_csv('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv')
+        labels_ip = df.iloc[:, 0]
+        print("label shape: {}".format(labels_ip.shape))
+
+        batch_sizes = [1,15]
+        for id, batch in enumerate(batch_sizes):
             # metrics_obj = Metrics()
             frame_arr = np.zeros(shape=(batch, 1, 28, 28))
             for i in range(batch):
@@ -69,11 +76,19 @@ class Profiler:
             batched_tensor = torch.tensor(frame_arr).float()
             print(batched_tensor.shape)
             start_time = time.time()
-            self._classobj._get_predictions(batched_tensor)
+            data = self._classobj._get_predictions(batched_tensor)
+            # print(data)
+            print("received data shape: {}".format(data.label.shape))
             time_taken = time.time() - start_time
             batch_size = batch
             # TO DO
-            accuracy = 100
+            correct_pred = 0
+            for id, label in enumerate(data.label):
+                print("{} {}".format(label, labels_ip[id]))
+                if int(label) == (labels_ip[id]):
+                    correct_pred += 1 
+            # print("correct_pred: {} Total Predictions: {}".format(correct_pred, data.size))
+            accuracy = (correct_pred/data.size) * 100
             metrics_obj = Metrics(time_taken, accuracy, batch_size)
             metrics_list.append(metrics_obj)
         print(metrics_list)

@@ -237,7 +237,7 @@ class CatalogManager(object):
         self,
         udf_id: int,
         list_of_metrics_objs: List[Metrics],
-    ) -> UdfProfileMetadata:
+    ) -> None:
         """
         Creates an udf_profile object and persists them
         Arguments:
@@ -246,10 +246,8 @@ class CatalogManager(object):
         Returns:
             None
         """
-        # TODO: check return type and fix func declaration
         for metrics_obj in list_of_metrics_objs:
             metadata = self._udf_profile_service.create_udf_profile(udf_id, metrics_obj)
-
         return
     
     def create_udf_profiler_sample(

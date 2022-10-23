@@ -56,8 +56,7 @@ class UdfProfileMetadata(BaseModel):
         udf_profile_str = "udf_profile: ({}, {}, {}, {} {})\n".format(
             self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy
         )
-        # TODO: Fix return string
-        return udf_str
+        return udf_profile_str
 
     def __eq__(self, other):
         return (

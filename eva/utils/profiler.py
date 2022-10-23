@@ -49,47 +49,61 @@ class Profiler:
         """
         # TODO: Implement the actual logic
         # Use self._classobj's methods to run for various batch sizes
-        print("testing")
         metrics_list = []
-        # vidcap = cv2.VideoCapture("/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4")
-        vidcap = cv2.VideoCapture('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4')
+        vidcap = cv2.VideoCapture("/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4")
+        # vidcap = cv2.VideoCapture('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4')
         _, image = vidcap.read()
-        print(image.shape)
+        h,w,c = image.shape
+        
+        expected_h = self._classobj.input_format.height
+        expected_w = self._classobj.input_format.width
+        expected_c = self._classobj.input_format.channels
 
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = gray.reshape(1,28,28)
-        print(gray.shape)
+        h = expected_h if expected_h != -1 else h
+        w = expected_w if expected_w != -1 else w
+        c = expected_c if expected_c != -1 else c
 
-        df = pd.read_csv('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv')
+        if(c==1):
+            #grayscale
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image = gray.reshape(c,w,h)            
+        else:
+            image = image.reshape(c,w,h)
+        
+        print("image after reshape:{}".format(image.shape))
+
+        df = pd.read_csv('/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv')
+        # df = pd.read_csv('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv')
         labels_ip = df.iloc[:, 0]
         print("label shape: {}".format(labels_ip.shape))
 
-        batch_sizes = [1,15]
+        batch_sizes = [1]
         for id, batch in enumerate(batch_sizes):
-            # metrics_obj = Metrics()
-            frame_arr = np.zeros(shape=(batch, 1, 28, 28))
+            frame_arr = np.zeros(shape=(batch, c, w, h))
             for i in range(batch):
                 frame_arr[i] = image
                 _, image = vidcap.read()
-                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                image = gray.reshape(1,28,28)
+                if(c==1):
+                    #grayscale
+                    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                    image = gray.reshape(c,w,h)
+                else:
+                    image = image.reshape(c,w,h)
             batched_tensor = torch.tensor(frame_arr).float()
             print(batched_tensor.shape)
             start_time = time.time()
             data = self._classobj._get_predictions(batched_tensor)
-            # print(data)
-            print("received data shape: {}".format(data.label.shape))
+            # print("received data shape: {}".format(data.label.shape))
             time_taken = time.time() - start_time
             batch_size = batch
             # TO DO
             correct_pred = 0
             for id, label in enumerate(data.label):
-                print("{} {}".format(label, labels_ip[id]))
+                # print("{} {}".format(label, labels_ip[id]))
                 if int(label) == (labels_ip[id]):
                     correct_pred += 1 
             # print("correct_pred: {} Total Predictions: {}".format(correct_pred, data.size))
             accuracy = (correct_pred/data.size) * 100
             metrics_obj = Metrics(time_taken, accuracy, batch_size)
             metrics_list.append(metrics_obj)
-        # print(metrics_list)
         return metrics_list

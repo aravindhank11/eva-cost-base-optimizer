@@ -50,23 +50,31 @@ class Profiler:
         # Use self._classobj's methods to run for various batch sizes
         print("testing")
         metrics_list = []
-        vidcap = cv2.VideoCapture("mnist.mp4")
+        vidcap = cv2.VideoCapture("/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4")
         _, image = vidcap.read()
-        batch_sizes = [1, 10, 100, 1000]
+        print(image.shape)
+
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = gray.reshape(1,28,28)
+        print(gray.shape)
+        batch_sizes = [1,5]
         for batch in batch_sizes:
             # metrics_obj = Metrics()
-            frame_arr = np.zeros(shape=(batch, 28, 28, 3))
+            frame_arr = np.zeros(shape=(batch, 1, 28, 28))
             for i in range(batch):
                 frame_arr[i] = image
                 _, image = vidcap.read()
-            batched_tensor = torch.tensor(frame_arr)
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                image = gray.reshape(1,28,28)
+            batched_tensor = torch.tensor(frame_arr).float()
+            print(batched_tensor.shape)
             start_time = time.time()
-            self._classobj.forward(batched_tensor)
+            self._classobj._get_predictions(batched_tensor)
             time_taken = time.time() - start_time
             batch_size = batch
             # TO DO
             accuracy = 100
             metrics_obj = Metrics(time_taken, accuracy, batch_size)
             metrics_list.append(metrics_obj)
-
+        print(metrics_list)
         return metrics_list

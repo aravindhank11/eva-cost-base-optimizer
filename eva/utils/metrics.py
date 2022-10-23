@@ -19,6 +19,12 @@ class Metrics:
         self._batch_size = batch_size
         self._time_taken = time_taken
         self._accuracy = accuracy
+    
+    def __repr__(self):
+        return f"Metrics( {self._batch_size}, {self._time_taken}, {self._accuracy})"
+    
+    def __str__(self):
+        return f"Metrics( {self._batch_size}, {self._time_taken}, {self._accuracy})"
 
     @property
     def batch_size(self):

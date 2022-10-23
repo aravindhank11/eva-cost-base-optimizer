@@ -28,16 +28,13 @@ class UdfProfileService(BaseService):
         """Creates a new udf profile entry
 
         Arguments:
-<<<<<<< HEAD
             udf_id (int): udf_id corresponding to the metrics
-=======
-            udf_id (str): udf_id corresponding to the metrics
->>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
             metrics: Metrics corresponding to the udf
 
         Returns:
             UdfMetadata: Returns the new entry created
         """
+<<<<<<< HEAD
         metadata = self.model(udf_id,
                               metrics.batch_size,
 <<<<<<< HEAD
@@ -46,6 +43,11 @@ class UdfProfileService(BaseService):
                               metrics.time_taken,
                               metrics.accuracy)
 >>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
+=======
+        metadata = self.model(
+            udf_id, metrics.batch_size, metrics.time_taken, metrics.accuracy
+        )
+>>>>>>> Fix linting issues when running test.sh
         metadata = metadata.save()
         self.print_all_profile("Post Inserting {}".format(udf_id))
         return metadata
@@ -65,11 +67,13 @@ class UdfProfileService(BaseService):
         """
         return_val = True
         try:
-            list_of_udf_profile_metadata = self.model.query.filter(self.model._udf_id == udf_id)
+            list_of_udf_profile_metadata = self.model.query.filter(
+                self.model._udf_id == udf_id
+            )
             for udf_profile_metadata in list_of_udf_profile_metadata:
                 udf_profile_metadata.delete()
         except Exception:
-            logger.exception("Delete udf Profile failed for id={}".format(name))
+            logger.exception("Delete udf Profile failed for id={}".format(udf_id))
             return_val = False
 
         self.print_all_profile("Post Dropping {}".format(udf_id))
@@ -79,6 +83,7 @@ class UdfProfileService(BaseService):
         print(when)
         list_of_udf_profile_metadata = self.get_all_profiles()
         for udf_profile_metadata in list_of_udf_profile_metadata:
+<<<<<<< HEAD
 <<<<<<< HEAD
             print("  {} {} {} {}".format(
                 udf_profile_metadata._udf_id,
@@ -95,6 +100,18 @@ class UdfProfileService(BaseService):
                 udf_profile_metadata._accuracy,
 >>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
             ))
+=======
+            print(
+                "  {} {} {} {} {} {}".format(
+                    udf_profile_metadata._udf_id,
+                    udf_profile_metadata._id,
+                    udf_profile_metadata._udf_id,
+                    udf_profile_metadata._batch_size,
+                    udf_profile_metadata._time_taken,
+                    udf_profile_metadata._accuracy,
+                )
+            )
+>>>>>>> Fix linting issues when running test.sh
 
     def get_all_profiles(self):
         try:

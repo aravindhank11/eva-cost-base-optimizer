@@ -44,8 +44,8 @@ class MnistCNN(PytorchAbstractClassifierUDF):
             outcome = outcome.append({"label" : str(label)}, ignore_index=True)
         # print(outcome)
         return outcome
+
     def forward(self, frames: Tensor) -> pd.DataFrame:
-        print("in frwd")
         return self._get_predictions(frames)
 
     def forward(self, frames: Tensor) -> pd.DataFrame:

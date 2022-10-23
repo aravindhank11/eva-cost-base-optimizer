@@ -63,22 +63,19 @@ class CreateUDFExecutor(AbstractExecutor):
             logger.error(err_msg)
             raise RuntimeError(err_msg)
 
-        catalog_manager.create_udf(
+        # create the actual udf
+        udf_metadata = catalog_manager.create_udf(
             self.node.name, impl_path, self.node.udf_type, io_list
         )
-
-        # create the actual udf
-        # udf_metadata = catalog_manager.create_udf(
-        #     self.node.name, impl_path, self.node.udf_type, io_list
-        # )
 
         # # Profile the UDF
         print("hello")
         profiler = Profiler(impl_path, self.node.name)
         metrics = profiler.run()
+        print("received {}".format(metrics))
 
-        # # Insert the profiled UDF to catalog
-        # catalog_manager.create_udf_profile(udf_metadata.id, metrics)
+        # Insert the profiled UDF to catalog
+        catalog_manager.create_udf_profile(udf_metadata.id, metrics)
 
         yield Batch(
             pd.DataFrame([f"UDF {self.node.name} successfully added to the database."])

@@ -20,7 +20,7 @@ from eva.models.storage.batch import Batch
 from eva.planner.create_udf_plan import CreateUDFPlan
 from eva.utils.generic_utils import path_to_class
 from eva.utils.logging_manager import logger
-from eva.utils.profiler import Profiler
+# from eva.utils.profiler import Profiler
 
 
 class CreateUDFExecutor(AbstractExecutor):
@@ -74,8 +74,8 @@ class CreateUDFExecutor(AbstractExecutor):
         profiler = Profiler(impl_path, self.node.name)
         metrics = profiler.run()
 
-        # Insert the profiled UDF to catalog
-        catalog_manager.create_udf_profile(udf_metadata.id, metrics)
+        # # Insert the profiled UDF to catalog
+        # catalog_manager.create_udf_profile(udf_metadata.id, metrics)
 
         yield Batch(
             pd.DataFrame([f"UDF {self.node.name} successfully added to the database."])

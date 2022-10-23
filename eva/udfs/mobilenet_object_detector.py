@@ -38,7 +38,7 @@ except ImportError as e:
     )
 
 
-class FastRCNNObjectDetector(PytorchAbstractClassifierUDF):
+class MobileNetObjectDetector(PytorchAbstractClassifierUDF):
     """
     Arguments:
         threshold (float): Threshold for classifier confidence score
@@ -47,7 +47,7 @@ class FastRCNNObjectDetector(PytorchAbstractClassifierUDF):
 
     @property
     def name(self) -> str:
-        return "fastrcnn"
+        return "mobilenet"
 
     def setup(self, threshold=0.85):
         self.threshold = threshold

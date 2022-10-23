@@ -45,8 +45,8 @@ class MnistCNN(PytorchAbstractClassifierUDF):
         # print(outcome)
         return outcome
     def forward(self, frames: Tensor) -> pd.DataFrame:
-        print("passing")
-        pass
+        print("in frwd")
+        return self._get_predictions(frames)
 
     def forward(self, frames: Tensor) -> pd.DataFrame:
         return self._get_predictions(frames)

@@ -120,3 +120,51 @@ class Functions(evaql_parserVisitor):
         udf_info = self.getUDFInfo(ctx)
         stmt = CreateUDFStatement(*udf_info)
         return stmt
+
+    def getUDFProfilerSampleInfo(self, ctx):
+        if_not_exists = False
+        if_exists = False
+        udf_type = None
+        sample_path = None
+        validation_path = None
+        
+        for child in ctx.children:
+            try:
+                if isinstance(child, TerminalNode):
+                    continue
+                rule_idx = child.getRuleIndex()
+
+                if rule_idx == evaql_parser.RULE_ifNotExists:
+                    if_not_exists = True
+
+                elif rule_idx == evaql_parser.RULE_ifExists:
+                    if_exists = True
+
+                elif rule_idx == evaql_parser.RULE_udfType:
+                    udf_type = self.visit(ctx.udfType())
+
+                elif rule_idx == evaql_parser.RULE_udfProfilerSamplePath:
+                    impl_path = self.visit(ctx.udfProfilerSamplePath()).value
+
+                elif rule_idx == evaql_parser.RULE_udfProfilerValidationPath:
+                    impl_path = self.visit(ctx.udfProfilerValidationPath()).value
+
+            except BaseException:
+                logger.error("CREATE/DROP UDF Failed")
+                # stop parsing something bad happened
+                return None
+
+        if if_exists and if_not_exists:
+            logger.error("Bad CREATE/DROP UDF command syntax")
+
+        return (
+            if_exists or if_not_exists,
+            udf_type,
+            sample_path,
+            validation_path
+        )
+
+    def visitCreateUdfProfilerSample(self, ctx: evaql_parser.CreateUdfProfilerSampleContext):
+        sample_info = self.getUDFProfilerSampleInfo(ctx)
+        stmt = CreateUDFProfilerSampleStatement(sample_info)
+        return stmt

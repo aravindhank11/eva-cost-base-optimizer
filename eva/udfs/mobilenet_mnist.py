@@ -21,6 +21,7 @@ from eva.models.catalog.frame_info import FrameInfo
 from eva.models.catalog.properties import ColorSpace
 from eva.udfs.abstract.pytorch_abstract_udf import PytorchAbstractClassifierUDF
 from torchvision.transforms import Compose, ToTensor, Normalize, Grayscale
+from torchvision.models.mobilenet import mobilenet_v2
 
 from PIL import Image
 
@@ -52,11 +53,9 @@ class MobileNetMnist(PytorchAbstractClassifierUDF):
     def name(self) -> str:
         return "MobileNetMnist"
 
-    def setup(self, threshold=0.85):
-        self.threshold = threshold
-        self.model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(
-            pretrained=True, progress=False
-        )
+    def setup(self):
+        #self.threshold = threshold
+        self.model = mobilenet_v2(pretrained=True)
         self.model.eval()
 
     @property

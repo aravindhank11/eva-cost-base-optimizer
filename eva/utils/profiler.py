@@ -21,6 +21,7 @@ import cv2
 import numpy as np
 import torch
 import pandas as pd
+import importlib.util
 
 from eva.utils.metrics import Metrics
 
@@ -117,21 +118,17 @@ class Profiler:
             batched_tensor = torch.tensor(frame_arr).float()
             print(batched_tensor.shape)
             start_time = time.time()
-            data = self._classobj.forward(batched_tensor)
+            predictions = self._classobj.forward(batched_tensor)
             # print("received data shape: {}".format(data.label.shape))
             time_taken = time.time() - start_time
             batch_size = batch
-            # TO DO
-            num_correct_pred = 0
-            for id, label in enumerate(data.label):
-                # print("{} {}".format(label, labels_ip[id]))
-                if int(label) == (labels_ip[id]):
-                    num_correct_pred += 1 
-            # print("num_correct_pred: {} Total Predictions: {}".format(num_correct_pred, data.size))
-            try:
-                accuracy = (num_correct_pred/data.size) * 100
-            except ZeroDivisionError:
-                accuracy = -1
+
+            # TODO: Calculate accuracy from python file provided in init.
+            
+            spec=importlib.util.spec_from_file_location("UdfAccuracy","eva/utils/accuracy_impl.py")
+            accuracy_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(accuracy_module)
+            accuracy = accuracy_module.UdfAccuracy.calculate_accuracy(labels_ip, predictions.label)                    
             metrics_obj = Metrics(time_taken, accuracy, batch_size)
             metrics_list.append(metrics_obj)
         return metrics_list

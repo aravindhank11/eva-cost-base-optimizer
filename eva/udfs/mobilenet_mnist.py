@@ -68,7 +68,6 @@ class MobileNetMnist(PytorchAbstractClassifierUDF):
 
     def transform(self, images) -> Compose:
         composed = Compose([
-            Grayscale(num_output_channels=1),
             ToTensor(),
             Normalize((0.1307,), (0.3081,))
         ])

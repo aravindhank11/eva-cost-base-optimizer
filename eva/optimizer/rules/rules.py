@@ -43,6 +43,7 @@ from eva.optimizer.operators import (
     LogicalCreateUDF,
     LogicalDrop,
     LogicalDropUDF,
+    LogicalCreateUDFProfilerSample,
     LogicalFilter,
     LogicalFunctionScan,
     LogicalGet,
@@ -78,6 +79,7 @@ from eva.planner.seq_scan_plan import SeqScanPlan
 from eva.planner.storage_plan import StoragePlan
 from eva.planner.union_plan import UnionPlan
 from eva.planner.upload_plan import UploadPlan
+from eva.planner.create_udf_profiler_sample_plan import CreateUDFProfilerSamplePlan
 
 # Modified
 
@@ -125,6 +127,7 @@ class RuleType(Flag):
     LOGICAL_PROJECT_TO_PHYSICAL = auto()
     LOGICAL_SHOW_TO_PHYSICAL = auto()
     LOGICAL_DROP_UDF_TO_PHYSICAL = auto()
+    LOGICAL_UDF_PROFILER_SAMPLE_TO_PHYSICAL = auto()
     IMPLEMENTATION_DELIMETER = auto()
 
     NUM_RULES = auto()
@@ -159,6 +162,7 @@ class Promise(IntEnum):
     LOGICAL_PROJECT_TO_PHYSICAL = auto()
     LOGICAL_SHOW_TO_PHYSICAL = auto()
     LOGICAL_DROP_UDF_TO_PHYSICAL = auto()
+    LOGICAL_UDF_PROFILER_SAMPLE_TO_PHYSICAL = auto()
     IMPLEMENTATION_DELIMETER = auto()
 
     # TRANSFORMATION RULES (LOGICAL -> LOGICAL)
@@ -956,6 +960,26 @@ class LogicalShowToPhysical(Rule):
 
     def apply(self, before: LogicalShow, context: OptimizerContext):
         after = ShowInfoPlan(before.show_type)
+        return after
+
+class LogicalUDFProfilerSampleToPhysical(Rule):
+    def __init__(self):
+        pattern = Pattern(OperatorType.LOGICAL_CREATE_UDF_PROFILER_SAMPLE)
+        super().__init__(RuleType.LOGICAL_UDF_PROFILER_SAMPLE_TO_PHYSICAL, pattern)
+
+    def promise(self):
+        return Promise.LOGICAL_UDF_PROFILER_SAMPLE_TO_PHYSICAL
+
+    def check(self, before: Operator, context: OptimizerContext):
+        return True
+
+    def apply(self, before: LogicalCreateUDFProfilerSample, context: OptimizerContext):
+        after = CreateUDFProfilerSamplePlan(
+            before.if_not_exists,
+            before.udf_type,
+            before.sample_path,
+            before.validation_path
+        )
         return after
 
 

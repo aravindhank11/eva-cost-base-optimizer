@@ -33,6 +33,7 @@ from eva.optimizer.operators import (
     LogicalShow,
     LogicalUnion,
     LogicalUpload,
+    LogicalCreateUDFProfilerSample,
 )
 from eva.optimizer.optimizer_utils import column_definition_to_udf_io
 from eva.parser.create_mat_view_statement import CreateMaterializedViewStatement
@@ -48,6 +49,7 @@ from eva.parser.show_statement import ShowStatement
 from eva.parser.statement import AbstractStatement
 from eva.parser.table_ref import TableRef
 from eva.parser.upload_statement import UploadStatement
+from eva.parser.create_udf_profiler_sample_statement import CreateUDFProfilerSampleStatement
 from eva.utils.logging_manager import logger
 
 
@@ -292,6 +294,24 @@ class StatementToPlanConvertor:
         show_opr = LogicalShow(statement.show_type)
         self._plan = show_opr
 
+    def visit_create_udf_profiler_sample(self, statement: CreateUDFProfilerSampleStatement):
+        """Convertor for parsed create udf profiler sample statement
+
+        Arguments:
+            statement {CreateUDFProfilerSampleStatement} - - Create UDF Profiler Sample Statement
+        """
+        # annotated_inputs = column_definition_to_udf_io(statement.inputs, True)
+        # annotated_outputs = column_definition_to_udf_io(statement.outputs, False)
+
+        create_udf_profiler_sample_opr = LogicalCreateUDFProfilerSample(
+            statement.if_not_exists,
+            statement.udf_type,
+            statement.sample_path,
+            statement.validation_path
+        )
+        self._plan = create_udf_profiler_sample_opr
+
+
     def visit(self, statement: AbstractStatement):
         """Based on the instance of the statement the corresponding
            visit is called.
@@ -322,6 +342,8 @@ class StatementToPlanConvertor:
             self.visit_materialized_view(statement)
         elif isinstance(statement, ShowStatement):
             self.visit_show(statement)
+        elif isinstance(statement,CreateUDFProfilerSampleStatement):
+            self.visit_create_udf_profiler_sample(statement)
         return self._plan
 
     @property

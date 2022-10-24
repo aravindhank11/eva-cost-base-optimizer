@@ -50,8 +50,10 @@ class Profiler:
         # TODO: Implement the actual logic
         # Use self._classobj's methods to run for various batch sizes
         metrics_list = []
-        vidcap = cv2.VideoCapture("/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4")
-        # vidcap = cv2.VideoCapture('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4')
+        # vidcap = cv2.VideoCapture("/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4")
+        vidcap = cv2.VideoCapture('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4')
+        total_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
+        print("frames in the video: {}".format(total_frames))
         _, image = vidcap.read()
         h,w,c = image.shape
         
@@ -72,38 +74,90 @@ class Profiler:
         
         print("image after reshape:{}".format(image.shape))
 
-        df = pd.read_csv('/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv')
-        # df = pd.read_csv('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv')
-        labels_ip = df.iloc[:, 0]
+        # df = pd.read_csv('/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv')
+        df = pd.read_csv('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv', header=None)
+        # print("last val check: {}".format(df.iloc[-1]))
+        # print(df.iloc[-1])
+        labels_ip = df.iloc[:,0]
+        print(labels_ip)
         print("label shape: {}".format(labels_ip.shape))
 
-        batch_sizes = [1]
-        for id, batch in enumerate(batch_sizes):
+        
+        batch_sizes = []
+        iterator = 1
+        while iterator <= total_frames:
+            batch_sizes.append(iterator)
+            iterator *= 5
+        for id, batch in enumerate(batch_sizes): # 1 5 25 125
             frame_arr = np.zeros(shape=(batch, c, w, h))
-            for i in range(batch):
-                frame_arr[i] = image
-                _, image = vidcap.read()
-                if(c==1):
-                    #grayscale
-                    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                    image = gray.reshape(c,w,h)
-                else:
-                    image = image.reshape(c,w,h)
+            # frame_arr = generate_tensor(batch_sizes, batch, frame_arr, c, w, h)
+            if id != 0:
+                for i in range(batch_sizes[id-1], batch):
+                    frame_arr[i] = image
+                    _, image = vidcap.read()
+                    # print(image)
+                    if(c==1):
+                        #grayscale
+                        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                        image = gray.reshape(c,w,h)
+                    else:
+                        image = image.reshape(c,w,h)
+            else:
+                for i in range(batch):
+                    frame_arr[i] = image
+                    _, image = vidcap.read()
+                    # print(image)
+                    if(c==1):
+                        #grayscale
+                        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                        image = gray.reshape(c,w,h)
+                    else:
+                        image = image.reshape(c,w,h)
+            print("len of batch: {}".format(len(frame_arr)))
             batched_tensor = torch.tensor(frame_arr).float()
             print(batched_tensor.shape)
             start_time = time.time()
-            data = self._classobj._get_predictions(batched_tensor)
+            data = self._classobj.forward(batched_tensor)
             # print("received data shape: {}".format(data.label.shape))
             time_taken = time.time() - start_time
             batch_size = batch
             # TO DO
-            correct_pred = 0
+            num_correct_pred = 0
             for id, label in enumerate(data.label):
                 # print("{} {}".format(label, labels_ip[id]))
                 if int(label) == (labels_ip[id]):
-                    correct_pred += 1 
-            # print("correct_pred: {} Total Predictions: {}".format(correct_pred, data.size))
-            accuracy = (correct_pred/data.size) * 100
+                    num_correct_pred += 1 
+            # print("num_correct_pred: {} Total Predictions: {}".format(num_correct_pred, data.size))
+            try:
+                accuracy = (num_correct_pred/data.size) * 100
+            except ZeroDivisionError:
+                accuracy = -1
             metrics_obj = Metrics(time_taken, accuracy, batch_size)
             metrics_list.append(metrics_obj)
         return metrics_list
+
+
+# def generate_tensor(batch_sizes, batch, frame_arr, c, w, h):
+#     if id != 0:
+#         for i in range(batch_sizes[id-1], batch):
+#             frame_arr[i] = image
+#             _, image = vidcap.read()
+#             print(image)
+#             if(c==1):
+#                 #grayscale
+#                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#                 image = gray.reshape(c,w,h)
+#             else:
+#                 image = image.reshape(c,w,h)
+#     else:
+#         for i in range(batch):
+#             frame_arr[i] = image
+#             _, image = vidcap.read()
+#             print(image)
+#             if(c==1):
+#                 #grayscale
+#                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#                 image = gray.reshape(c,w,h)
+#             else:
+#                 image = image.reshape(c,w,h)
+#     return frame_arr

@@ -158,6 +158,11 @@ OUTPUT:                         'OUTPUT';
 TYPE:                           'TYPE';
 IMPL:                           'IMPL';
 
+// UDF PROFILER
+PROFILER:                            'PROFILER';
+FOR:                                 'FOR';
+VALIDATION:                          'VALIDATION';
+
 // MATERIALIZED
 MATERIALIZED:                   'MATERIALIZED';
 VIEW:                           'VIEW';

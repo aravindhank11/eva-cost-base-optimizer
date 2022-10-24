@@ -86,6 +86,15 @@ createMaterializedView
       selectStatement
       ;
 
+// Create UDF profiler sample
+createUdfProfilerSample
+    : CREATE PROFILER SAMPLE
+      ifNotExists?
+      FOR TYPE udfType
+      SAMPLE udfProfilerSamplePath
+      VALIDATION udfProfilerValidationPath
+    ;
+
 // details
 udfName
     : uid
@@ -96,6 +105,14 @@ udfType
     ;
 
 udfImpl
+    : stringLiteral
+    ;
+
+udfProfilerSamplePath
+    : stringLiteral
+    ;
+
+udfProfilerValidationPath
     : stringLiteral
     ;
 

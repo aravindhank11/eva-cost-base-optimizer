@@ -60,7 +60,7 @@ class InceptionMnist(PytorchAbstractClassifierUDF):
         self.model = models.inception_v3(pretrained=True)
         for param in self.model.parameters():
             param.requires_grad = False
-        self.model.fc = nn.Linear(self.model.in_features, 10)
+        self.model.fc = nn.Linear(2048, 10)
         self.model.eval()
 
     @property

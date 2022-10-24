@@ -87,7 +87,7 @@ class Profiler:
         iterator = 1
         while iterator <= total_frames:
             batch_sizes.append(iterator)
-            iterator *= 7
+            iterator *= 5
         for id, batch in enumerate(batch_sizes): # 1 5 25 125
             frame_arr = np.zeros(shape=(batch, c, w, h))
             # frame_arr = generate_tensor(batch_sizes, batch, frame_arr, c, w, h)

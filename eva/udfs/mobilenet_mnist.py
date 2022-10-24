@@ -50,7 +50,7 @@ class MobileNetMnist(PytorchAbstractClassifierUDF):
 
     @property
     def name(self) -> str:
-        return "MnistMobilenet"
+        return "MobileNetMnist"
 
     def setup(self, threshold=0.85):
         self.threshold = threshold

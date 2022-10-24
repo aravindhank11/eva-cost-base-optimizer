@@ -20,7 +20,7 @@ import pandas as pd
 from eva.models.catalog.frame_info import FrameInfo
 from eva.models.catalog.properties import ColorSpace
 from eva.udfs.abstract.pytorch_abstract_udf import PytorchAbstractClassifierUDF
-from torchvision.transforms import Compose, ToTensor, Normalize, Grayscale
+from torchvision.transforms import Compose, ToTensor, Normalize, Grayscale, Resize, CenterCrop
 from torchvision import models
 import torchvision.models as models
 import torch

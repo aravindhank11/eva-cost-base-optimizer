@@ -1070,7 +1070,7 @@ class LogicalCreateUDFProfilerSample(Operator):
         if_not_exists: bool,
         udf_type: str = None,
         sample_path: Path,
-        validation_path = Path,
+        validation_path: Path,
         children: List = None,
     ):
         super().__init__(OperatorType.LOGICAL_CREATE_UDF_PROFILER_SAMPLE, children)

@@ -1068,7 +1068,7 @@ class LogicalCreateUDFProfilerSample(Operator):
     def __init__(
         self,
         if_not_exists: bool,
-        udf_type: str = None,
+        udf_type: str,
         sample_path: Path,
         validation_path: Path,
         children: List = None,

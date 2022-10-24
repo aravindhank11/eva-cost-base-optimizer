@@ -270,7 +270,7 @@ class CatalogManager(object):
              None
         """
         
-        metadata = self._udf_profiler_sample_service.create_udf_profiler_sample(udf_type, sample_path,validation_path)
+        metadata = self._udf_profiler_sample_service.create_udf_profiler_sample(udf_type, sample_path, validation_path)
         return metadata
     
     def get_udf_profiler_sample_by_type(self, udf_type: str) -> UdfProfilerSample:

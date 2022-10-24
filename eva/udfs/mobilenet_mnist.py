@@ -22,6 +22,7 @@ from eva.models.catalog.properties import ColorSpace
 from eva.udfs.abstract.pytorch_abstract_udf import PytorchAbstractClassifierUDF
 from torchvision.transforms import Compose, ToTensor, Normalize, Grayscale
 from torchvision.models.mobilenet import mobilenet_v2
+import torch
 
 from PIL import Image
 

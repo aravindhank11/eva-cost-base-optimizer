@@ -56,6 +56,7 @@ class MobileNetMnist(PytorchAbstractClassifierUDF):
     def setup(self):
         #self.threshold = threshold
         self.model = mobilenet_v2(pretrained=True)
+        self.model.classifier[1] = torch.nn.Linear(in_features=self.model.classifier[1].in_features, out_features=10)
         self.model.eval()
 
     @property

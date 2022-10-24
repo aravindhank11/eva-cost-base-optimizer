@@ -62,7 +62,7 @@ class MobileNetMnist(PytorchAbstractClassifierUDF):
 
     @property
     def input_format(self) -> FrameInfo:
-        return FrameInfo(1, 28, 28, ColorSpace.RGB)
+        return FrameInfo(3, 28, 28, ColorSpace.RGB)
 
     @property
     def labels(self) -> List[str]:

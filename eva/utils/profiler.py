@@ -41,7 +41,6 @@ class Profiler:
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         self._classobj = getattr(module, classname)()
-
         # Below fields not used any more
 
         # self._samplepath = samplepath # path of video file

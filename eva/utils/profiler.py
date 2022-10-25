@@ -40,8 +40,8 @@ class Profiler:
         spec.loader.exec_module(module)
         self._classobj = getattr(module, classname)()
 
-        self._samplepath = samplepath
-        self._validationpath = validationpath
+        self._samplepath = samplepath # path of video file
+        self._validationpath = validationpath # path of label files
 
     def run(self):
         """

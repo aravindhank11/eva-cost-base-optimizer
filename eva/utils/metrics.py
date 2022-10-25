@@ -14,7 +14,7 @@
 # limitations under the License.
 
 class Metrics:
-    def __init__(self, batch_size:int, time_taken:int, accuracy:float):
+    def __init__(self, batch_size:int, time_taken:int):
         self._batch_size = batch_size
         self._time_taken = time_taken
 

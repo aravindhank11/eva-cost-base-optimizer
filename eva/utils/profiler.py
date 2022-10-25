@@ -19,6 +19,7 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+from sqlalchemy import true
 import torch
 import pandas as pd
 import importlib.util
@@ -56,6 +57,12 @@ class Profiler:
         total_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
         print("frames in the video: {}".format(total_frames))
         _, image = vidcap.read()
+        frame_list = []
+        ret = 1
+        while ret:            
+            ret, img = vidcap.read()
+            frame_list.append(img)
+        print("tot ex frames: {}".format(len(frame_list)))
         h,w,c = image.shape
         
         expected_h = self._classobj.input_format.height
@@ -80,8 +87,8 @@ class Profiler:
         # print("last val check: {}".format(df.iloc[-1]))
         # print(df.iloc[-1])
         labels_ip = df.iloc[:,0]
-        print(labels_ip)
-        print("label shape: {}".format(labels_ip.shape))
+        # print(labels_ip)
+        print("label shape: {}".format(type(labels_ip)))
 
         
         batch_sizes = []
@@ -89,72 +96,61 @@ class Profiler:
         while iterator <= total_frames:
             batch_sizes.append(iterator)
             iterator *= 5
+        print("Batch Sizes: {}".format(batch_sizes))
         for id, batch in enumerate(batch_sizes): # 1 5 25 125
             frame_arr = np.zeros(shape=(batch, c, w, h))
-            # frame_arr = generate_tensor(batch_sizes, batch, frame_arr, c, w, h)
-            if id != 0:
-                for i in range(batch_sizes[id-1], batch):
-                    frame_arr[i] = image
-                    _, image = vidcap.read()
-                    # print(image)
-                    if(c==1):
-                        #grayscale
-                        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                        image = gray.reshape(c,w,h)
-                    else:
-                        image = image.reshape(c,w,h)
-            else:
-                for i in range(batch):
-                    frame_arr[i] = image
-                    _, image = vidcap.read()
-                    # print(image)
-                    if(c==1):
-                        #grayscale
-                        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                        image = gray.reshape(c,w,h)
-                    else:
-                        image = image.reshape(c,w,h)
-            print("len of batch: {}".format(len(frame_arr)))
-            batched_tensor = torch.tensor(frame_arr).float()
-            print(batched_tensor.shape)
-            start_time = time.time()
-            predictions = self._classobj.forward(batched_tensor)
-            # print("received data shape: {}".format(data.label.shape))
-            time_taken = time.time() - start_time
+            print("for batch {}".format(batch))
+            accuracy_avg = 0.0
+            time_avg = 0.0
             batch_size = batch
+            iter = batch
+            iter_prev = 0
+            sum_acc = 0.0
+            sum_time = 0.0
+            counter = 0
+            while(iter < total_frames):
+                # in while loop use: iter_prev <= total_frames
+                # if iter > total_frames:
+                #     continue
+                    # iter = total_frames
+                    # print("last case: {}".format(iter))
+                label_each_round = []
+                print("round start: {} {}".format(iter_prev, iter))
+                for i in range(iter_prev, iter):                    
+                    image = frame_list[i]
+                    label_each_round.append(labels_ip[i])
+                    if(c==1):
+                        #grayscale
+                        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                        image = gray.reshape(c,w,h)
+                    else:
+                        image = image.reshape(c,w,h)
+                    frame_arr[i%batch] = image
+                # print("len of batch: {}".format(len(frame_arr)))
+                batched_tensor = torch.tensor(frame_arr).float()
+                # print(batched_tensor.shape)
+                start_time = time.time()
+                predictions = self._classobj.forward(batched_tensor)
+                label_each_round = pd.Series(label_each_round)
+                print("pred shape: {} grnd truth shape: {}".format(predictions.label.shape, label_each_round.shape))
+                time_taken = time.time() - start_time
+                spec = importlib.util.spec_from_file_location("UdfAccuracy", "eva/utils/accuracy_impl.py")
+                accuracy_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(accuracy_module)
+                accuracy = accuracy_module.UdfAccuracy.calculate_accuracy(label_each_round, predictions.label)
+                print("mil gaya {}".format(accuracy))
+                sum_time += time_taken
+                sum_acc += accuracy
+                iter_prev = iter
+                iter += batch
+                counter += 1
+                # print("round over: {} {}".format(iter_prev, iter))
+            accuracy_avg = sum_acc / counter
+            time_avg = sum_time / counter
+            print("acc: {} time: {} rounds: {}".format(accuracy_avg, time_avg, counter))
 
             # TODO: Calculate accuracy from python file provided in init.
             
-            spec=importlib.util.spec_from_file_location("UdfAccuracy","eva/utils/accuracy_impl.py")
-            accuracy_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(accuracy_module)
-            accuracy = accuracy_module.UdfAccuracy.calculate_accuracy(labels_ip, predictions.label)                    
-            metrics_obj = Metrics(time_taken, accuracy, batch_size)
+            metrics_obj = Metrics(batch_size, time_avg, accuracy_avg)
             metrics_list.append(metrics_obj)
         return metrics_list
-
-
-# def generate_tensor(batch_sizes, batch, frame_arr, c, w, h):
-#     if id != 0:
-#         for i in range(batch_sizes[id-1], batch):
-#             frame_arr[i] = image
-#             _, image = vidcap.read()
-#             print(image)
-#             if(c==1):
-#                 #grayscale
-#                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#                 image = gray.reshape(c,w,h)
-#             else:
-#                 image = image.reshape(c,w,h)
-#     else:
-#         for i in range(batch):
-#             frame_arr[i] = image
-#             _, image = vidcap.read()
-#             print(image)
-#             if(c==1):
-#                 #grayscale
-#                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#                 image = gray.reshape(c,w,h)
-#             else:
-#                 image = image.reshape(c,w,h)
-#     return frame_arr

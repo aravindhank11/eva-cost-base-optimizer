@@ -42,6 +42,9 @@ class Profiler:
         spec.loader.exec_module(module)
         self._classobj = getattr(module, classname)()
 
+        self._samplepath = samplepath
+        self._validationpath = validationpath
+
     def run(self):
         """
         * Profiles the given UDF for various batch sizes

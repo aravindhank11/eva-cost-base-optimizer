@@ -154,29 +154,3 @@ class Profiler:
             metrics_obj = Metrics(batch_size, time_avg, accuracy_avg)
             metrics_list.append(metrics_obj)
         return metrics_list
-
-
-# def generate_tensor(batch_sizes, batch, frame_arr, c, w, h):
-#     if id != 0:
-#         for i in range(batch_sizes[id-1], batch):
-#             frame_arr[i] = image
-#             _, image = vidcap.read()
-#             print(image)
-#             if(c==1):
-#                 #grayscale
-#                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#                 image = gray.reshape(c,w,h)
-#             else:
-#                 image = image.reshape(c,w,h)
-#     else:
-#         for i in range(batch):
-#             frame_arr[i] = image
-#             _, image = vidcap.read()
-#             print(image)
-#             if(c==1):
-#                 #grayscale
-#                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#                 image = gray.reshape(c,w,h)
-#             else:
-#                 image = image.reshape(c,w,h)
-#     return frame_arr

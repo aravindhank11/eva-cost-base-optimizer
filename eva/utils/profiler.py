@@ -41,7 +41,6 @@ class Profiler:
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         self._classobj = getattr(module, classname)()
-
         # Below fields not used any more
 
         # self._samplepath = samplepath # path of video file
@@ -70,6 +69,6 @@ class Profiler:
             start_time = time.time()
             predictions = self._classobj.forward(input_tensor)
             time_taken = time.time() - start_time
-            metrics_obj = Metrics(batch, time_taken, 100)
+            metrics_obj = Metrics(batch, time_taken)
             metrics_list.append(metrics_obj)
         return metrics_list            

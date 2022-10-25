@@ -23,6 +23,8 @@ from sqlalchemy import true
 import torch
 import pandas as pd
 import importlib.util
+import os.path
+import sys
 
 from eva.utils.metrics import Metrics
 
@@ -55,17 +57,18 @@ class Profiler:
         # TODO: Implement the actual logic
         # Use self._classobj's methods to run for various batch sizes
         metrics_list = []
-        # vidcap = cv2.VideoCapture("/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4")
-        vidcap = cv2.VideoCapture('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini.mp4')
+        csv_path = os.getcwd() + '/mnist_mini/mnist_mini_labels.csv'
+        vid_path = os.getcwd() + '/mnist_mini/mnist_mini.mp4'
+        vidcap = cv2.VideoCapture(vid_path)
         total_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
-        print("frames in the video: {}".format(total_frames))
+        print("total frames in the video: {}".format(total_frames))
         _, image = vidcap.read()
         frame_list = []
         ret = 1
         while ret:            
             ret, img = vidcap.read()
             frame_list.append(img)
-        print("tot ex frames: {}".format(len(frame_list)))
+        print("total extracted frames: {}".format(len(frame_list)))
         h,w,c = image.shape
         
         expected_h = self._classobj.input_format.height
@@ -85,8 +88,8 @@ class Profiler:
         
         print("image after reshape:{}".format(image.shape))
 
-        # df = pd.read_csv('/home/azureuser/dbsi_project/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv')
-        df = pd.read_csv('/home/naman/Desktop/eva-cost-base-optimizer/mnist_mini/mnist_mini_labels.csv', header=None)
+        
+        df = pd.read_csv(csv_path, header=None)
         # print("last val check: {}".format(df.iloc[-1]))
         # print(df.iloc[-1])
         labels_ip = df.iloc[:,0]
@@ -101,8 +104,7 @@ class Profiler:
             iterator *= 5
         print("Batch Sizes: {}".format(batch_sizes))
         for id, batch in enumerate(batch_sizes): # 1 5 25 125
-            frame_arr = np.zeros(shape=(batch, c, w, h))
-            print("for batch {}".format(batch))
+            print("for batch size: {}".format(batch))
             accuracy_avg = 0.0
             time_avg = 0.0
             batch_size = batch
@@ -112,11 +114,10 @@ class Profiler:
             sum_time = 0.0
             counter = 0
             while(iter < total_frames):
-                # in while loop use: iter_prev <= total_frames
-                # if iter > total_frames:
-                #     continue
-                    # iter = total_frames
-                    # print("last case: {}".format(iter))
+                # handle edge case: [300, 305] --> [300, 302] for total_frames = 302
+                if iter == iter_prev:
+                    break
+                frame_arr = np.zeros(shape=(iter - iter_prev, c, w, h))
                 label_each_round = []
                 print("round start: {} {}".format(iter_prev, iter))
                 for i in range(iter_prev, iter):                    
@@ -135,25 +136,23 @@ class Profiler:
                 start_time = time.time()
                 predictions = self._classobj.forward(batched_tensor)
                 label_each_round = pd.Series(label_each_round)
-                print("pred shape: {} grnd truth shape: {}".format(predictions.label.shape, label_each_round.shape))
+                # print("pred shape: {} grnd truth shape: {}".format(predictions.label.shape, label_each_round.shape))
                 time_taken = time.time() - start_time
                 spec = importlib.util.spec_from_file_location("UdfAccuracy", "eva/utils/accuracy_impl.py")
                 accuracy_module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(accuracy_module)
                 accuracy = accuracy_module.UdfAccuracy.calculate_accuracy(label_each_round, predictions.label)
-                print("mil gaya {}".format(accuracy))
+                # print("mil gaya {}".format(accuracy))
                 sum_time += time_taken
                 sum_acc += accuracy
                 iter_prev = iter
-                iter += batch
+                iter =  total_frames - 1 if iter + batch >= total_frames - 1 else iter + batch
+                # iter += batch
                 counter += 1
                 # print("round over: {} {}".format(iter_prev, iter))
             accuracy_avg = sum_acc / counter
             time_avg = sum_time / counter
-            print("acc: {} time: {} rounds: {}".format(accuracy_avg, time_avg, counter))
-
-            # TODO: Calculate accuracy from python file provided in init.
-            
+            print("---> acc: {} time: {} rounds: {}".format(accuracy_avg, time_avg, counter))
             metrics_obj = Metrics(batch_size, time_avg, accuracy_avg)
             metrics_list.append(metrics_obj)
         return metrics_list

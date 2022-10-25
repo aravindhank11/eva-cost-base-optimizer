@@ -13,18 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 class Metrics:
-    def __init__(self, batch_size: int, time_taken: int, accuracy: float):
+    def __init__(self, batch_size:int, time_taken:int, accuracy:float):
         self._batch_size = batch_size
         self._time_taken = time_taken
         self._accuracy = accuracy
-    
-    def __repr__(self):
-        return f"Metrics( {self._batch_size}, {self._time_taken}, {self._accuracy})"
-    
-    def __str__(self):
-        return f"Metrics( {self._batch_size}, {self._time_taken}, {self._accuracy})"
 
     @property
     def batch_size(self):

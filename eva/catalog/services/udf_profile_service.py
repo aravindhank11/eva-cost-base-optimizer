@@ -28,15 +28,16 @@ class UdfProfileService(BaseService):
         """Creates a new udf profile entry
 
         Arguments:
-            udf_id (str): udf_id corresponding to the metrics
+            udf_id (int): udf_id corresponding to the metrics
             metrics: Metrics corresponding to the udf
 
         Returns:
             UdfMetadata: Returns the new entry created
         """
-        metadata = self.model(
-            udf_id, metrics.batch_size, metrics.time_taken, metrics.accuracy
-        )
+        metadata = self.model(udf_id,
+                              metrics.batch_size,
+                              metrics.time_taken,
+                              metrics.accuracy)
         metadata = metadata.save()
         self.print_all_profile("Post Inserting {}".format(udf_id))
         return metadata
@@ -45,20 +46,18 @@ class UdfProfileService(BaseService):
         """Drop a udf profile entry from the catalog udfprofilemetadata
 
         Arguments:
-            id (int): udf id to be deleted
+            udf_id (int): udf id to be deleted
 
         Returns:
             True if successfully deleted else False
         """
         return_val = True
         try:
-            list_of_udf_profile_metadata = self.model.query.filter(
-                self.model._udf_id == udf_id
-            )
+            list_of_udf_profile_metadata = self.model.query.filter(self.model._udf_id == udf_id)
             for udf_profile_metadata in list_of_udf_profile_metadata:
                 udf_profile_metadata.delete()
         except Exception:
-            logger.exception("Delete udf Profile failed for id={}".format(udf_id))
+            logger.exception("Delete udf Profile failed for id={}".format(name))
             return_val = False
 
         self.print_all_profile("Post Dropping {}".format(udf_id))

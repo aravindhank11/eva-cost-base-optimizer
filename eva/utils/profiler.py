@@ -37,7 +37,7 @@ class Profiler:
     def run(self):
         """
         * Profiles the given UDF for various batch sizes
-        * Gathers metrics related to time_taken and accuracy
+        * Gathers metrics related to time_taken
 
         Param: None
 
@@ -46,6 +46,6 @@ class Profiler:
         # TODO: Implement the actual logic
         # Use self._classobj's methods to run for various batch sizes
 
-        return [Metrics(1, 25, 100),
-                Metrics(2, 45, 100),
-                Metrics(5, 110, 100)]
+        return [Metrics(1, 25),
+                Metrics(2, 45),
+                Metrics(5, 110)]

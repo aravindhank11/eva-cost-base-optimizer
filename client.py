@@ -17,35 +17,20 @@ connection = connect(host = '0.0.0.0', port = 5432) # hostname, port of the serv
 cursor = connection.cursor()
 
 # Drop a UDF
-exec("DROP UDF IF EXISTS CNNMnist")
+exec("DROP UDF IF EXISTS Resnet50ObjectDetector")
 
 # Re-Create the UDF
 cmd = """
-CREATE UDF IF NOT EXISTS CNNMnist
-INPUT  (data NDARRAY (3, 28, 28))
-OUTPUT (label TEXT(2))
-TYPE mnist
-IMPL 'eva/udfs/mnist.py';
+CREATE UDF IF NOT EXISTS Resnet50ObjectDetector
+INPUT  (frame NDARRAY UINT8(3, ANYDIM, ANYDIM))
+OUTPUT (labels NDARRAY STR(ANYDIM), bboxes NDARRAY FLOAT32(ANYDIM, 4), scores NDARRAY FLOAT32(ANYDIM))
+TYPE ObjectDetection
+IMPL 'eva/udfs/object_detector.py';
 """
 exec(cmd)
 
 # Upload the mnist video
-exec("LOAD FILE 'data/mnist/mnist.mp4' INTO MNISTVid")
+exec("LOAD FILE 'data/ua_detrac/ua_detrac.mp4' INTO ObjDetectionVid")
 
 # Run the Image Classification UDF on video
-response = exec("SELECT data, CNNMnist(data).label FROM MNISTVid", True)
-
-import matplotlib.pyplot as plt
-import numpy as np
-
-# create figure (fig), and array of axes (ax)
-fig, ax = plt.subplots(nrows=5, ncols=5, figsize=[6,8])
-
-df = response.batch.frames
-for axi in ax.flat:
-    idx = np.random.randint(len(df))
-    img = df['mnistvid.data'].iloc[idx]
-    label = df['cnnmnist.label'].iloc[idx]
-    axi.imshow(img)
-    axi.set_title(f'label: {label}')
-plt.show()
+response = exec("SELECT data, Resnet50ObjectDetector(data) FROM ObjDetectionVid where id<2", True)

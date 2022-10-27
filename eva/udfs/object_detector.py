@@ -52,11 +52,12 @@ class ObjectDetector(PytorchAbstractClassifierUDF):
     def __init__(self, model_name):
         module = importlib.import_module("torchvision.models.detection")
         self._torch_model = getattr(module, model_name)
+        self.name = model_name
         super().__init__()
 
     @property
     def name(self) -> str:
-        return "fastrcnn"
+        return self.name
 
     def setup(self, threshold=0.85):
         self.threshold = threshold

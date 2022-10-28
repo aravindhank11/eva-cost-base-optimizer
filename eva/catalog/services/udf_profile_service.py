@@ -36,8 +36,7 @@ class UdfProfileService(BaseService):
         """
         metadata = self.model(udf_id,
                               metrics.batch_size,
-                              metrics.time_taken,
-                              metrics.accuracy)
+                              metrics.time_taken)
         metadata = metadata.save()
         self.print_all_profile("Post Inserting {}".format(udf_id))
         return metadata
@@ -67,15 +66,12 @@ class UdfProfileService(BaseService):
         print(when)
         list_of_udf_profile_metadata = self.get_all_profiles()
         for udf_profile_metadata in list_of_udf_profile_metadata:
-            print(
-                "  {} {} {} {} {}".format(
-                    udf_profile_metadata._id,
-                    udf_profile_metadata._udf_id,
-                    udf_profile_metadata._batch_size,
-                    udf_profile_metadata._time_taken,
-                    udf_profile_metadata._accuracy,
-                )
-            )
+            print("  {} {} {} {}".format(
+                udf_profile_metadata._udf_id,
+                udf_profile_metadata._id,
+                udf_profile_metadata._batch_size,
+                udf_profile_metadata._time_taken,
+            ))
 
     def get_all_profiles(self):
         try:

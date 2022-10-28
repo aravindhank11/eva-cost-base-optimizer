@@ -25,4 +25,3 @@ class Metrics:
     @property
     def time_taken(self):
         return self._time_taken
-

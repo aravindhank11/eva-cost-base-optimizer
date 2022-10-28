@@ -44,28 +44,12 @@ class UdfProfileMetadata(BaseModel):
     @property
     def time_taken(self):
         return self._time_taken
-
-<<<<<<< HEAD
+    
     def __str__(self):
         udf_profile_str = "udf_profile: ({}, {}, {}, {})\n".format(
             self.id, self.udf_id, self.batch_size, self.time_taken
         )
         return udf_profile_str
-=======
-    @property
-    def accuracy(self):
-        return self._accuracy
-
-    def __str__(self):
-        udf_profile_str = "udf_profile: ({}, {}, {}, {} {})\n".format(
-            self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy
-        )
-<<<<<<< HEAD
-        return udf_str
->>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
-=======
-        return udf_profile_str
->>>>>>> Fix linting issues when running test.sh
 
     def __eq__(self, other):
         return (
@@ -73,21 +57,7 @@ class UdfProfileMetadata(BaseModel):
             and self.udf_id == other.udf_id
             and self.batch_size == other.batch_size
             and self.time_taken == other.time_taken
-<<<<<<< HEAD
         )
 
     def __hash__(self) -> int:
         return hash((self.id, self.udf_id, self.batch_size, self.time_taken))
-=======
-            and self.accuracy == other.accuracy
-        )
-
-    def __hash__(self) -> int:
-<<<<<<< HEAD
-        return hash((self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy))
->>>>>>> chore: Create profiler catalog table and insert dummy metrics into it
-=======
-        return hash(
-            (self.id, self.udf_id, self.batch_size, self.time_taken, self.accuracy)
-        )
->>>>>>> Fix linting issues when running test.sh

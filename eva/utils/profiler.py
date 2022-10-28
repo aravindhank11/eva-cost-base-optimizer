@@ -41,10 +41,6 @@ class Profiler:
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         self._classobj = getattr(module, classname)()
-        # Below fields not used any more
-
-        # self._samplepath = samplepath # path of video file
-        # self._validationpath = validationpath # path of label files
 
     def run(self):
         """
@@ -62,10 +58,10 @@ class Profiler:
         expected_w = self._classobj.input_format.width
         expected_c = self._classobj.input_format.channels
 
-        batch_sizes = [1,10,100,1000] 
+        batch_sizes = [5, 20, 50, 200, 400, 500, 750] 
         metrics_list=[]
-        for id, batch in enumerate(batch_sizes): # 1 5 25 125
-            input_tensor = torch.rand(batch, expected_c, expected_w, expected_h).float()
+        for batch in enumerate(batch_sizes):
+            input_tensor = torch.rand(batch, expected_c, expected_w, expected_h)
             start_time = time.time()
             predictions = self._classobj.forward(input_tensor)
             time_taken = time.time() - start_time

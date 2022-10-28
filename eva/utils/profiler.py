@@ -72,3 +72,4 @@ class Profiler:
             metrics_obj = Metrics(batch, time_taken)
             metrics_list.append(metrics_obj)
         return metrics_list            
+

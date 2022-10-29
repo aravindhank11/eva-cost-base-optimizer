@@ -66,7 +66,7 @@ class CreateUDFExecutor(AbstractExecutor):
 
         # create the actual udf
         udf_metadata = catalog_manager.create_udf(
-            self.node.name, impl_path, self.node.udf_type, io_list
+            self.node.name, self.node.accuracy, impl_path, self.node.udf_type, io_list
         )
 
         # Profile the UDF

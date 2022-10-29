@@ -210,6 +210,7 @@ class CatalogManager(object):
     def create_udf(
         self,
         name: str,
+        accuracy: float,
         impl_file_path: str,
         type: str,
         udf_io_list: List[UdfIO],
@@ -219,6 +220,7 @@ class CatalogManager(object):
 
         Arguments:
             name(str): name of the udf to which this metdata corresponds
+            accuracy(float): accuracy of encapsulated implementation
             impl_file_path(str): implementation path of the udf,
                                  relative to eva/udf
             type(str): what kind of udf operator like classification,
@@ -229,7 +231,7 @@ class CatalogManager(object):
             The persisted UdfMetadata object with the id field populated.
         """
 
-        metadata = self._udf_service.create_udf(name, impl_file_path, type)
+        metadata = self._udf_service.create_udf(name, accuracy, impl_file_path, type)
         for udf_io in udf_io_list:
             udf_io.udf_id = metadata.id
         self._udf_io_service.add_udf_io(udf_io_list)

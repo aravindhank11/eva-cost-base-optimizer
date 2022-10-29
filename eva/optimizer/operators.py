@@ -54,6 +54,7 @@ class OperatorType(IntEnum):
     LOGICAL_SHOW = auto()
     LOGICALDROPUDF = auto()
     LOGICALDELIMITER = auto()
+    LOGICAL_CREATE_UDF_PROFILER_SAMPLE = auto()
 
 
 class Operator:
@@ -560,6 +561,8 @@ class LogicalCreateUDF(Operator):
             udf inputs, annotated list similar to table columns
         outputs: List[UdfIO]
             udf outputs, annotated list similar to table columns
+        accuracy: float
+            The accuracy of the encapsulated udf implementation
         impl_path: Path
             file path which holds the implementation of the udf.
             This file should be placed in the UDF directory and
@@ -574,6 +577,7 @@ class LogicalCreateUDF(Operator):
         if_not_exists: bool,
         inputs: List[UdfIO],
         outputs: List[UdfIO],
+        accuracy: float,
         impl_path: Path,
         udf_type: str = None,
         children: List = None,
@@ -583,6 +587,7 @@ class LogicalCreateUDF(Operator):
         self._if_not_exists = if_not_exists
         self._inputs = inputs
         self._outputs = outputs
+        self.accuracy = accuracy
         self._impl_path = impl_path
         self._udf_type = udf_type
 
@@ -603,6 +608,10 @@ class LogicalCreateUDF(Operator):
         return self._outputs
 
     @property
+    def accuracy(self):
+        return self._accuracy
+
+    @property
     def impl_path(self):
         return self._impl_path
 
@@ -620,6 +629,7 @@ class LogicalCreateUDF(Operator):
             and self.if_not_exists == other.if_not_exists
             and self.inputs == other.inputs
             and self.outputs == other.outputs
+            and self.accuracy == other.accuracy
             and self.udf_type == other.udf_type
             and self.impl_path == other.impl_path
         )
@@ -633,6 +643,7 @@ class LogicalCreateUDF(Operator):
                 tuple(self.inputs),
                 tuple(self.outputs),
                 self.udf_type,
+                self.accuracy
                 self.impl_path,
             )
         )
@@ -1043,3 +1054,78 @@ class LogicalShow(Operator):
 
     def __hash__(self) -> int:
         return hash((super().__hash__(), self.show_type))
+
+class LogicalCreateUDFProfilerSample(Operator):
+    """
+    Logical node for create udf operations
+
+    Attributes:
+        if_not_exists: bool
+            if true should throw an error if udf with same name exists
+            else will replace the existing
+        udf_type: str
+            udf type. it ca be object detection, classification etc.
+        sample_path: str
+            file path which holds the sample for the udf_type.
+            This file should be placed in the UDF directory and
+            the path provided should be relative to the UDF dir.
+        validation_path: str
+            file path which holds the validation data for the sample at sample_path.
+            This file should be placed in the UDF directory and
+            the path provided should be relative to the UDF dir.
+    """
+
+    def __init__(
+        self,
+        if_not_exists: bool,
+        udf_type: str,
+        sample_path: Path,
+        validation_path: Path,
+        children: List = None,
+    ):
+        super().__init__(OperatorType.LOGICAL_CREATE_UDF_PROFILER_SAMPLE, children)
+        self._if_not_exists = if_not_exists
+        self._udf_type = udf_type
+        self._sample_path = sample_path
+        self._validation_path = validation_path
+        
+
+    @property
+    def if_not_exists(self):
+        return self._if_not_exists
+
+    @property
+    def udf_type(self):
+        return self._udf_type
+
+    @property
+    def sample_path(self):
+        return self._sample_path
+    
+    @property
+    def validation_path(self):
+        return self._validation_path
+
+
+    def __eq__(self, other):
+        is_subtree_equal = super().__eq__(other)
+        if not isinstance(other, LogicalCreateUDFProfilerSample):
+            return False
+        return (
+            is_subtree_equal
+            and self.if_not_exists == other.if_not_exists
+            and self.udf_type == other.udf_type
+            and self.sample_path == other.sample_path
+            and self.validation_path == self.validation_path
+        )
+
+    def __hash__(self) -> int:
+        return hash(
+            (
+                super().__hash__(),
+                self.if_not_exists,
+                self.udf_type,
+                self.sample_path,
+                self.validation_path
+            )
+        )

@@ -643,7 +643,7 @@ class LogicalCreateUDF(Operator):
                 tuple(self.inputs),
                 tuple(self.outputs),
                 self.udf_type,
-                self.accuracy
+                self.accuracy,
                 self.impl_path,
             )
         )

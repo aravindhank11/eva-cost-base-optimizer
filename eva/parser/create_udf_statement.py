@@ -33,6 +33,8 @@ class CreateUDFStatement(AbstractStatement):
             udf inputs, represented similar to a table column definition
         outputs: List[ColumnDefinition]
             udf outputs, represented similar to a table column definition
+        accuracy: float
+            The accuracy of the encapsulated udf implementation
         impl_file_path: str
             file path which holds the implementation of the udf.
             This file should be placed in the UDF directory and
@@ -47,6 +49,7 @@ class CreateUDFStatement(AbstractStatement):
         if_not_exists: bool,
         inputs: List[ColumnDefinition],
         outputs: List[ColumnDefinition],
+        accuracy: float,
         impl_path: str,
         udf_type: str = None,
     ):
@@ -55,15 +58,17 @@ class CreateUDFStatement(AbstractStatement):
         self._if_not_exists = if_not_exists
         self._inputs = inputs
         self._outputs = outputs
+        self._accuracy = accuracy
         self._impl_path = Path(impl_path)
         self._udf_type = udf_type
 
     def __str__(self) -> str:
-        print_str = "CREATE UDF {} INPUT ({}) OUTPUT ({}) TYPE {} IMPL {}".format(
+        print_str = "CREATE UDF {} INPUT ({}) OUTPUT ({}) TYPE {} ACCURACY {} IMPL {}".format(
             self._name,
             self._inputs,
             self._outputs,
             self._udf_type,
+            self._accuracy
             self._impl_path.name,
         )
         return print_str
@@ -83,6 +88,10 @@ class CreateUDFStatement(AbstractStatement):
     @property
     def outputs(self):
         return self._outputs
+    
+    @property
+    def accuracy(self):
+        return self._accuracy
 
     @property
     def impl_path(self):
@@ -100,6 +109,7 @@ class CreateUDFStatement(AbstractStatement):
             and self.if_not_exists == other.if_not_exists
             and self.inputs == other.inputs
             and self.outputs == other.outputs
+            and self.accuracy == other.accuracy
             and self.impl_path == other.impl_path
             and self.udf_type == other.udf_type
         )
@@ -111,6 +121,6 @@ class CreateUDFStatement(AbstractStatement):
                 self.name,
                 self.if_not_exists,
                 tuple(self.inputs),
-                tuple(self.outputs, self.impl_path, self.udf_type),
+                tuple(self.outputs, self.accuracy, self.impl_path, self.udf_type),
             )
         )

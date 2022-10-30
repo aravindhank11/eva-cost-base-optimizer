@@ -41,10 +41,6 @@ class Profiler:
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         self._classobj = getattr(module, classname)()
-        # Below fields not used any more
-
-        # self._samplepath = samplepath # path of video file
-        # self._validationpath = validationpath # path of label files
 
     def run(self):
         """
@@ -72,4 +68,3 @@ class Profiler:
             metrics_obj = Metrics(batch, time_taken)
             metrics_list.append(metrics_obj)
         return metrics_list            
-

@@ -560,6 +560,8 @@ class LogicalCreateUDF(Operator):
             udf inputs, annotated list similar to table columns
         outputs: List[UdfIO]
             udf outputs, annotated list similar to table columns
+        accuracy: float
+            The accuracy of the encapsulated udf implementation
         impl_path: Path
             file path which holds the implementation of the udf.
             This file should be placed in the UDF directory and
@@ -574,6 +576,7 @@ class LogicalCreateUDF(Operator):
         if_not_exists: bool,
         inputs: List[UdfIO],
         outputs: List[UdfIO],
+        accuracy: float,
         impl_path: Path,
         udf_type: str = None,
         children: List = None,
@@ -583,6 +586,7 @@ class LogicalCreateUDF(Operator):
         self._if_not_exists = if_not_exists
         self._inputs = inputs
         self._outputs = outputs
+        self._accuracy = accuracy
         self._impl_path = impl_path
         self._udf_type = udf_type
 
@@ -603,6 +607,10 @@ class LogicalCreateUDF(Operator):
         return self._outputs
 
     @property
+    def accuracy(self):
+        return self._accuracy
+
+    @property
     def impl_path(self):
         return self._impl_path
 
@@ -620,6 +628,7 @@ class LogicalCreateUDF(Operator):
             and self.if_not_exists == other.if_not_exists
             and self.inputs == other.inputs
             and self.outputs == other.outputs
+            and self.accuracy == other.accuracy
             and self.udf_type == other.udf_type
             and self.impl_path == other.impl_path
         )
@@ -633,6 +642,7 @@ class LogicalCreateUDF(Operator):
                 tuple(self.inputs),
                 tuple(self.outputs),
                 self.udf_type,
+                self.accuracy,
                 self.impl_path,
             )
         )

@@ -34,6 +34,8 @@ class CreateUDFPlan(AbstractPlan):
             udf inputs, annotated list similar to table columns
         outputs: List[UdfIO]
             udf outputs, annotated list similar to table columns
+        accuracy: float
+            The accuracy of the encapsulated udf implementation
         impl_file_path: Path
             file path which holds the implementation of the udf.
             This file should be placed in the data directory and
@@ -48,6 +50,7 @@ class CreateUDFPlan(AbstractPlan):
         if_not_exists: bool,
         inputs: List[UdfIO],
         outputs: List[UdfIO],
+        accuracy: float,
         impl_file_path: Path,
         udf_type: str = None,
     ):
@@ -56,6 +59,7 @@ class CreateUDFPlan(AbstractPlan):
         self._if_not_exists = if_not_exists
         self._inputs = inputs
         self._outputs = outputs
+        self._accuracy = accuracy
         self._impl_path = impl_file_path
         self._udf_type = udf_type
 
@@ -76,6 +80,10 @@ class CreateUDFPlan(AbstractPlan):
         return self._outputs
 
     @property
+    def accuracy(self):
+        return self._accuracy
+
+    @property
     def impl_path(self):
         return self._impl_path
 
@@ -90,6 +98,7 @@ class CreateUDFPlan(AbstractPlan):
                 self.if_not_exists,
                 tuple(self.inputs),
                 tuple(self.outputs),
+                self.accuracy,
                 self.impl_path,
                 self.udf_type,
             )

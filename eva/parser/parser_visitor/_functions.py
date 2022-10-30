@@ -58,6 +58,7 @@ class Functions(evaql_parserVisitor):
         if_exists = False
         input_definitions = []
         output_definitions = []
+        accuracy = 0.0
         impl_path = None
         udf_type = None
         for child in ctx.children:
@@ -89,6 +90,9 @@ class Functions(evaql_parserVisitor):
                 elif rule_idx == evaql_parser.RULE_udfType:
                     udf_type = self.visit(ctx.udfType())
 
+                elif rule_idx == evaql_parser.RULE_decimalLiteral:
+                    accuracy = self.visit(ctx.decimalLiteral())
+
                 elif rule_idx == evaql_parser.RULE_udfImpl:
                     impl_path = self.visit(ctx.udfImpl()).value
 
@@ -105,6 +109,7 @@ class Functions(evaql_parserVisitor):
             if_exists or if_not_exists,
             input_definitions,
             output_definitions,
+            accuracy,
             impl_path,
             udf_type,
         )

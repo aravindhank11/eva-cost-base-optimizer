@@ -566,6 +566,7 @@ class LogicalCreateUDFToPhysical(Rule):
             before.if_not_exists,
             before.inputs,
             before.outputs,
+            before.accuracy,
             before.impl_path,
             before.udf_type,
         )

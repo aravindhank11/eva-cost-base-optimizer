@@ -74,6 +74,7 @@ createUdf
       INPUT  createDefinitions
       OUTPUT createDefinitions
       TYPE   udfType
+      ACCURACY decimalLiteral
       IMPL   udfImpl
     ;
 

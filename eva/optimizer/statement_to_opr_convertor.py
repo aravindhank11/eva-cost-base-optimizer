@@ -237,6 +237,7 @@ class StatementToPlanConvertor:
             statement.if_not_exists,
             annotated_inputs,
             annotated_outputs,
+            statement.accuracy,
             statement.impl_path,
             statement.udf_type,
         )

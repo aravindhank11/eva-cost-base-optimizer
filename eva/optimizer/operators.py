@@ -587,7 +587,7 @@ class LogicalCreateUDF(Operator):
         self._if_not_exists = if_not_exists
         self._inputs = inputs
         self._outputs = outputs
-        self.accuracy = accuracy
+        self._accuracy = accuracy
         self._impl_path = impl_path
         self._udf_type = udf_type
 

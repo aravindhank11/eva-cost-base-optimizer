@@ -68,7 +68,7 @@ class CreateUDFStatement(AbstractStatement):
             self._inputs,
             self._outputs,
             self._udf_type,
-            self._accuracy
+            self._accuracy,
             self._impl_path.name,
         )
         return print_str

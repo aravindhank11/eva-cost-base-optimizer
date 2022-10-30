@@ -48,7 +48,6 @@ class CatalogManager(object):
         self._column_service = DatasetColumnService()
         self._udf_service = UdfService()
         self._udf_profile_service = UdfProfileService()
-        self._udf_profiler_sample_service = UdfProfilerSampleService()
         self._udf_io_service = UdfIOService()
 
     def reset(self):

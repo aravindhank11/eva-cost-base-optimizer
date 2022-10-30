@@ -25,6 +25,7 @@ CREATE UDF IF NOT EXISTS Resnet50ObjectDetector
 INPUT  (frame NDARRAY UINT8(3, ANYDIM, ANYDIM))
 OUTPUT (labels NDARRAY STR(ANYDIM), bboxes NDARRAY FLOAT32(ANYDIM, 4), scores NDARRAY FLOAT32(ANYDIM))
 TYPE ObjectDetection
+ACCURACY 100
 IMPL 'eva/udfs/object_detector.py';
 """
 exec(cmd)

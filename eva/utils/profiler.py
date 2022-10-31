@@ -30,7 +30,7 @@ from eva.utils.metrics import Metrics
 
 
 class Profiler:
-    def __init__(self, filepath: str, classname: str, samplepath: str, validationpath: str):
+    def __init__(self, filepath: str, classname: str):
         """
         * Profiler is supposed to be called post basic validation
         * So object creation is guaranteed
@@ -54,13 +54,17 @@ class Profiler:
 
         #NOTE This wont work if input_format is -1. Need to implement for that case.
 
-        expected_h = self._classobj.input_format.height
-        expected_w = self._classobj.input_format.width
-        expected_c = self._classobj.input_format.channels
+        # expected_h = self._classobj.input_format.height
+        # expected_w = self._classobj.input_format.width
+        # expected_c = self._classobj.input_format.channels
+
+        expected_h = 28
+        expected_w = 28
+        expected_c = 3
 
         batch_sizes = [5, 20, 50, 200, 400, 500, 750] 
         metrics_list=[]
-        for batch in enumerate(batch_sizes):
+        for batch in batch_sizes:
             input_tensor = torch.rand(batch, expected_c, expected_w, expected_h)
             start_time = time.time()
             predictions = self._classobj.forward(input_tensor)

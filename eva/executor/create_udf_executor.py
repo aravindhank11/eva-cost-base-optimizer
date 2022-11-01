@@ -22,7 +22,6 @@ from eva.utils.generic_utils import path_to_class
 from eva.utils.logging_manager import logger
 from eva.utils.profiler import Profiler
 
-
 class CreateUDFExecutor(AbstractExecutor):
     def __init__(self, node: CreateUDFPlan):
         super().__init__(node)
@@ -70,9 +69,9 @@ class CreateUDFExecutor(AbstractExecutor):
         )
 
         # Profile the UDF
-        #sample = catalog_manager.get_udf_profiler_sample_by_type(self.node.udf_type)
-        profiler = Profiler(impl_path, self.node.name, "", "")#, sample.sample_path, sample.validation_path)
+        profiler = Profiler(impl_path, self.node.name)
         metrics = profiler.run()
+        print("received {}".format(metrics))
 
         # Insert the profiled UDF to catalog
         catalog_manager.create_udf_profile(udf_metadata.id, metrics)

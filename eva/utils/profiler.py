@@ -14,12 +14,19 @@
 # limitations under the License.
 
 import importlib
+import time
 from pathlib import Path
+
+import torch
+import importlib.util
+import os.path
+import sys
 
 from eva.utils.metrics import Metrics
 
+
 class Profiler:
-    def __init__(self, filepath: str, classname: str, samplepath: str, validationpath: str):
+    def __init__(self, filepath: str, classname: str):
         """
         * Profiler is supposed to be called post basic validation
         * So object creation is guaranteed
@@ -29,10 +36,7 @@ class Profiler:
         spec = importlib.util.spec_from_file_location(abs_path.stem, abs_path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        self._classobj = getattr(module, classname)
-
-        self._samplepath = samplepath
-        self._validationpath = validationpath
+        self._classobj = getattr(module, classname)()
 
     def run(self):
         """
@@ -42,10 +46,25 @@ class Profiler:
         Param: None
 
         Returns: List[Metrics]
-        """
-        # TODO: Implement the actual logic
-        # Use self._classobj's methods to run for various batch sizes
+        """        
 
-        return [Metrics(1, 25),
-                Metrics(2, 45),
-                Metrics(5, 110)]
+        #NOTE This wont work if input_format is -1. Need to implement for that case.
+
+        # expected_h = self._classobj.input_format.height
+        # expected_w = self._classobj.input_format.width
+        # expected_c = self._classobj.input_format.channels
+
+        expected_h = 28
+        expected_w = 28
+        expected_c = 3
+
+        batch_sizes = [5, 20, 50, 200, 400, 500, 750] 
+        metrics_list=[]
+        for batch in batch_sizes:
+            input_tensor = torch.rand(batch, expected_c, expected_w, expected_h)
+            start_time = time.time()
+            predictions = self._classobj.forward(input_tensor)
+            time_taken = time.time() - start_time
+            metrics_obj = Metrics(batch, time_taken)
+            metrics_list.append(metrics_obj)
+        return metrics_list            

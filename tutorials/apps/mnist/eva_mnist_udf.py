@@ -1,7 +1,7 @@
 import pandas as pd
 from torch import Tensor
 import torch
-from eva.udfs.pytorch_abstract_udf import PytorchAbstractClassifierUDF
+from eva.udfs.abstract.pytorch_abstract_udf import PytorchAbstractClassifierUDF
 from eva.models.catalog.frame_info import FrameInfo
 from eva.models.catalog.properties import ColorSpace
 from torchvision.transforms import Compose, ToTensor, Normalize, Grayscale
@@ -21,7 +21,7 @@ class MnistCNN(PytorchAbstractClassifierUDF):
 
     @property
     def input_format(self):
-        return FrameInfo(1, 28, 28, ColorSpace.RGB)
+        return FrameInfo(28,28,1, ColorSpace.RGB)
 
     @property
     def labels(self):
@@ -38,13 +38,19 @@ class MnistCNN(PytorchAbstractClassifierUDF):
 
     def _get_predictions(self, frames: Tensor) -> pd.DataFrame:
         outcome = pd.DataFrame()
-        predictions = self.model(frames)
+        predictions = self.model(frames)        
         for prediction in predictions:
             label = self.as_numpy(prediction.data.argmax())
             outcome = outcome.append({"label" : str(label)}, ignore_index=True)
-        
+        # print(outcome)
         return outcome
 
+    def forward(self, frames: Tensor) -> pd.DataFrame:
+        return self._get_predictions(frames)
+
+
+    def setup(self, threshold=0.85):
+        pass
 
 
 import torch.nn as nn

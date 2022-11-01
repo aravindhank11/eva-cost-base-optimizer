@@ -48,8 +48,6 @@ class MnistCNN(PytorchAbstractClassifierUDF):
     def forward(self, frames: Tensor) -> pd.DataFrame:
         return self._get_predictions(frames)
 
-    def forward(self, frames: Tensor) -> pd.DataFrame:
-        return self._get_predictions(frames)
 
     def setup(self, threshold=0.85):
         pass

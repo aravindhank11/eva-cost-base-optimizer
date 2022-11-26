@@ -58,6 +58,7 @@ from eva.optimizer.operators import (
     LogicalShow,
     LogicalUnion,
     LogicalUpload,
+    LogicalSetConstraint,
     Operator,
     OperatorType,
 )
@@ -78,6 +79,7 @@ from eva.planner.seq_scan_plan import SeqScanPlan
 from eva.planner.storage_plan import StoragePlan
 from eva.planner.union_plan import UnionPlan
 from eva.planner.upload_plan import UploadPlan
+from eva.planner.set_constraint_plan import SetConstraintPlan
 
 # Modified
 
@@ -125,6 +127,7 @@ class RuleType(Flag):
     LOGICAL_PROJECT_TO_PHYSICAL = auto()
     LOGICAL_SHOW_TO_PHYSICAL = auto()
     LOGICAL_DROP_UDF_TO_PHYSICAL = auto()
+    LOGICAL_SET_CONSTRAINT_TO_PHYSICAL = auto()
     IMPLEMENTATION_DELIMETER = auto()
 
     NUM_RULES = auto()
@@ -159,6 +162,7 @@ class Promise(IntEnum):
     LOGICAL_PROJECT_TO_PHYSICAL = auto()
     LOGICAL_SHOW_TO_PHYSICAL = auto()
     LOGICAL_DROP_UDF_TO_PHYSICAL = auto()
+    LOGICAL_SET_CONSTRAINT_TO_PHYSICAL = auto()
     IMPLEMENTATION_DELIMETER = auto()
 
     # TRANSFORMATION RULES (LOGICAL -> LOGICAL)
@@ -959,6 +963,21 @@ class LogicalShowToPhysical(Rule):
         after = ShowInfoPlan(before.show_type)
         return after
 
+class LogicalSetConstraintToPhysical(Rule):
+    def __init__(self):
+        pattern = Pattern(OperatorType.LOGICAL_SET_CONSTRAINT)
+        super().__init__(RuleType.LOGICAL_SET_CONSTRAINT_TO_PHYSICAL, pattern)
+
+    def promise(self):
+        return Promise.LOGICAL_SET_CONSTRAINT_TO_PHYSICAL
+
+    def check(self, grp_id: int, context: OptimizerContext):
+        return True
+
+    def apply(self, before: LogicalSetConstraint, context: OptimizerContext):
+        after = SetConstraintPlan(before.min_accuracy,before.max_deadline,before.favors)
+        return after
+
 
 # IMPLEMENTATION RULES END
 ##############################################
@@ -1008,6 +1027,7 @@ class RulesManager:
             LogicalFilterToPhysical(),
             LogicalProjectToPhysical(),
             LogicalShowToPhysical(),
+            LogicalSetConstraintToPhysical(),
         ]
         self._all_rules = (
             self._rewrite_rules + self._logical_rules + self._implementation_rules

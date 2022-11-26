@@ -19,6 +19,7 @@ from eva.optimizer.optimizer_task_stack import OptimizerTaskStack
 from eva.optimizer.optimizer_tasks import BottomUpRewrite, OptimizeGroup, TopDownRewrite
 from eva.optimizer.property import PropertyType
 from eva.optimizer.rules.rules import RulesManager
+from eva.utils.optimizer_constraints import UDFOptimizerConstraints
 
 
 class PlanGenerator:
@@ -55,6 +56,7 @@ class PlanGenerator:
 
     def optimize(self, logical_plan: Operator):
         optimizer_context = OptimizerContext(self.cost_model)
+        optimizer_constraints = UDFOptimizerConstraints()
         memo = optimizer_context.memo
         grp_expr = optimizer_context.add_opr_to_group(opr=logical_plan)
         root_grp_id = grp_expr.group_id

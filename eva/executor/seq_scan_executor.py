@@ -17,6 +17,7 @@ from typing import Iterator
 from eva.executor.abstract_executor import AbstractExecutor
 from eva.executor.executor_utils import apply_predicate, apply_project
 from eva.models.storage.batch import Batch
+from eva.optimizer.plan_generator import Selectivity
 from eva.planner.seq_scan_plan import SeqScanPlan
 
 
@@ -40,6 +41,7 @@ class SequentialScanExecutor(AbstractExecutor):
     def exec(self) -> Iterator[Batch]:
 
         child_executor = self.children[0]
+        input_len = 0
         for batch in child_executor.exec():
             # apply alias to the batch
             # id, data -> myvideo.id, myvideo.data
@@ -50,6 +52,8 @@ class SequentialScanExecutor(AbstractExecutor):
             batch = apply_predicate(batch, self.predicate)
             # Then do project
             batch = apply_project(batch, self.project_expr)
+
+            Selectivity.update_selectivity(child_executor.node, len(batch) / 252)
 
             if not batch.empty():
                 yield batch

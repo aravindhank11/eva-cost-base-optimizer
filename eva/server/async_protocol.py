@@ -69,7 +69,7 @@ class EvaClient(asyncio.Protocol):
         self.buffer = EvaProtocolBuffer()
         if loop is None:
             loop = asyncio.get_event_loop()
-        self.queue = asyncio.Queue(loop=loop)
+        self.queue = asyncio.Queue()#loop=loop)
         self.loop = loop
         self.id = EvaClient.__connections__
 

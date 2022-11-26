@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import asyncio
+import traceback
 from typing import Iterator, Optional
 
 from eva.binder.statement_binder import StatementBinder
@@ -31,7 +32,6 @@ def execute_query(query, report_time: bool = False) -> Iterator[Batch]:
     """
     Execute the query and return a result generator.
     """
-
     query_compile_time = Timer()
     with query_compile_time:
         stmt = Parser().parse(query)[0]
@@ -71,6 +71,7 @@ def handle_request(transport, request_message):
         try:
             output_batch = execute_query_fetch_all(request_message)
         except Exception as e:
+            print(traceback.format_exc())
             error_msg = str(e)
             logger.warn(error_msg)
             error = True

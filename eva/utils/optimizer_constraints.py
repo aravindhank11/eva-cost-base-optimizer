@@ -23,36 +23,38 @@ class UDFOptimizerConstraints(object):
     """
     Optimizer constraints for selecting optimal UDFs
     """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(UDFOptimizerConstraints, cls).__new__(cls)
-        return cls.instance
 
-    def __init__(self):
-        self._min_accuracy = 0
-        self._max_deadline = float('inf')
-        self._favors = FavorType.ACCURACY
+    _min_accuracy = 0
+    _max_deadline = float('inf')
+    _favors = FavorType.ACCURACY
 
-    @property
-    def min_accuracy(self):
+    @classmethod
+    def print(self):
+        print("acu=%d time=%f favour=%s" %(self._min_accuracy, self._max_deadline, self._favors))
+
+    @classmethod
+    def get_min_accuracy(self):
         return self._min_accuracy
     
-    @min_accuracy.setter
-    def min_accuracy(self,value):
+    @classmethod
+    def min_accuracy(self, value):
         self._min_accuracy = value
     
-    @property
-    def max_deadline(self):
+    @classmethod
+    def get_max_deadline(self):
         return self._max_deadline
     
-    @max_deadline.setter
+    @classmethod
     def max_deadline(self,value):
         self._max_deadline = value
     
-    @property
-    def favors(self):
+    @classmethod
+    def get_favors(self):
         return self._favors
 
-    @favors.setter
-    def favors(self,value):
-        self._favors = value
+    @classmethod
+    def favors(self, favors):
+        if (favors == 1):
+            self._favors = FavorType.ACCURACY
+        else:
+            self._favors = FavorType.DEADLINE

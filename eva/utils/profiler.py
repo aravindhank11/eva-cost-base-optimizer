@@ -19,14 +19,14 @@ from pathlib import Path
 
 import torch
 import importlib.util
-import os.path
-import sys
+import numpy as np
+import pandas as pd
 
 from eva.utils.metrics import Metrics
 
 
 class Profiler:
-    def __init__(self, filepath: str, classname: str):
+    def __init__(self, filepath: str, classname: str, type_: str):
         """
         * Profiler is supposed to be called post basic validation
         * So object creation is guaranteed
@@ -37,6 +37,7 @@ class Profiler:
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         self._classobj = getattr(module, classname)()
+        self.type = type_
 
     def run(self):
         """
@@ -46,24 +47,26 @@ class Profiler:
         Param: None
 
         Returns: List[Metrics]
-        """        
+        """
 
-        #NOTE This wont work if input_format is -1. Need to implement for that case.
+        #TODO: Remove the hack
 
-        # expected_h = self._classobj.input_format.height
-        # expected_w = self._classobj.input_format.width
-        # expected_c = self._classobj.input_format.channels
+        #expected_h = 960
+        #expected_w = 540
+        #expected_c = 3
 
-        expected_h = 28
-        expected_w = 28
-        expected_c = 3
-
-        batch_sizes = [5, 20, 50, 200, 400, 500, 750] 
+        batch_sizes = [8]
         metrics_list=[]
         for batch in batch_sizes:
-            input_tensor = torch.rand(batch, expected_c, expected_w, expected_h)
+            inp = self._classobj.generate_sample_input(batch)
+            """
+            if (self.type == "ObjectDetection"):
+                inp = torch.rand(batch, expected_c, expected_w, expected_h)
+            else:
+                inp = pd.DataFrame({"labels": [np.random.rand(batch)], "search": ["car"]})
+            """
             start_time = time.time()
-            predictions = self._classobj.forward(input_tensor)
+            _ = self._classobj.forward(inp)
             time_taken = time.time() - start_time
             metrics_obj = Metrics(batch, time_taken)
             metrics_list.append(metrics_obj)

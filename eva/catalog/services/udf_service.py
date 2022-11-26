@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import traceback
 from sqlalchemy.orm.exc import NoResultFound
 
 from eva.catalog.models.udf import UdfMetadata
@@ -64,6 +65,12 @@ class UdfService(BaseService):
             return self.model.query.filter(self.model._id == id).one()
         except NoResultFound:
             return None
+
+    def udf_with_min_accuracy(self, type_, accuracy):
+        try:
+            return self.model.query.filter(self.model._accuracy >= accuracy).filter(self.model._type == type_).all()
+        except:
+            print(traceback.format_exc())
 
     def drop_udf_by_name(self, name: str):
         """Drop a udf entry from the catalog udfmetadata

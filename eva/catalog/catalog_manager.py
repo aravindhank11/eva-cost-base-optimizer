@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pdb
+import traceback
 from typing import List
 
 from eva.catalog.column_type import ColumnType, NdArrayType
@@ -250,7 +252,7 @@ class CatalogManager(object):
         for metrics_obj in list_of_metrics_objs:
             metadata = self._udf_profile_service.create_udf_profile(udf_id, metrics_obj)
         return
-    
+
     def get_udf_by_name(self, name: str) -> UdfMetadata:
         """
         Get the UDF information based on name.
@@ -282,6 +284,12 @@ class CatalogManager(object):
                 )
             )
         return self._udf_io_service.get_outputs_by_udf_id(udf_obj.id)
+
+    def get_udf_with_accuracy_and_time(self, type_, accuracy, time, cardinality):
+        udfs_with_accuracy = self._udf_service.udf_with_min_accuracy(type_, accuracy)
+        udfs_with_accuracy_and_time = self._udf_profile_service.udf_within_deadline(
+            [(i.id, i.name, i.impl_file_path, i.accuracy) for i in udfs_with_accuracy], time, cardinality)
+        return udfs_with_accuracy_and_time
 
     def drop_dataset_metadata(self, database_name: str, table_name: str) -> bool:
         """

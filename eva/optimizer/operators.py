@@ -53,6 +53,7 @@ class OperatorType(IntEnum):
     LOGICAL_CREATE_MATERIALIZED_VIEW = auto()
     LOGICAL_SHOW = auto()
     LOGICALDROPUDF = auto()
+    LOGICAL_SET_CONSTRAINT = auto()
     LOGICALDELIMITER = auto()
 
 
@@ -1053,3 +1054,32 @@ class LogicalShow(Operator):
 
     def __hash__(self) -> int:
         return hash((super().__hash__(), self.show_type))
+
+
+class LogicalSetConstraint(Operator):
+    def __init__(self, min_accuracy, max_deadline, favors, children: List = None):
+        super().__init__(OperatorType.LOGICAL_SET_CONSTRAINT, children)
+        self._min_accuracy = min_accuracy
+        self._max_deadline = max_deadline
+        self._favors = favors
+
+    @property
+    def min_accuracy(self):
+        return self._min_accuracy
+    
+    @property
+    def max_deadline(self):
+        return self._max_deadline
+    
+    @property
+    def favors(self):
+        return self._favors
+
+    def __eq__(self, other):
+        is_subtree_equal = super().__eq__(other)
+        if not isinstance(other, LogicalSetConstraint):
+            return False
+        return is_subtree_equal and self.min_accuracy == other.min_accuracy and self.max_deadline == other.max_deadline and self.favors == other.favors
+
+    def __hash__(self) -> int:
+        return hash((super().__hash__(),self.min_accuracy,self.max_deadline,self.favors))

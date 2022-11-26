@@ -12,47 +12,36 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from eva.expression.constant_value_expression import ConstantValueExpression
+from eva.planner.abstract_plan import AbstractPlan
+from eva.planner.types import PlanOprType
 
-from enum import Enum, auto
 
-class FavorType(Enum):
-    ACCURACY = auto()
-    DEADLINE = auto()
-
-class UDFOptimizerConstraints(object):
+class SetConstraintPlan(AbstractPlan):
     """
-    Optimizer constraints for selecting optimal UDFs
+    Arguments:
+        min_accuracy: minimum accuracy constraint
+        max_deadline: max deadline constraint
+        favors: favors accuracy or deadline constraint
     """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(UDFOptimizerConstraints, cls).__new__(cls)
-        return cls.instance
 
-    def __init__(self):
-        self._min_accuracy = 0
-        self._max_deadline = float('inf')
-        self._favors = FavorType.ACCURACY
+    def __init__(self, min_accuracy, max_deadline, favors):
+        self._min_accuracy = min_accuracy
+        self._max_deadline = max_deadline
+        self._favors = favors
+        super().__init__(PlanOprType.SET_CONSTRAINT)
 
     @property
     def min_accuracy(self):
         return self._min_accuracy
     
-    @min_accuracy.setter
-    def min_accuracy(self,value):
-        self._min_accuracy = value
-    
     @property
     def max_deadline(self):
         return self._max_deadline
-    
-    @max_deadline.setter
-    def max_deadline(self,value):
-        self._max_deadline = value
     
     @property
     def favors(self):
         return self._favors
 
-    @favors.setter
-    def favors(self,value):
-        self._favors = value
+    def __hash__(self) -> int:
+        return hash((super().__hash__(),self._min_accuracy,self._max_deadline,self._favors))

@@ -26,7 +26,7 @@ emptyStatement
 
 ddlStatement
     : createDatabase | createTable | createIndex | createUdf | createMaterializedView
-    | dropDatabase | dropTable | dropUdf | dropIndex | renameTable
+    | dropDatabase | dropTable | dropUdf | dropIndex | renameTable | setConstraint
     ;
 
 dmlStatement
@@ -86,6 +86,17 @@ createMaterializedView
       AS
       selectStatement
       ;
+
+// Set constraints
+setConstraint
+    : SET CONSTRAINT
+      MIN_ACCURACY decimalLiteral
+      MAX_DEADLINE decimalLiteral
+      FAVORS constraintName;
+
+constraintName
+    : ACCURACY | DEADLINE;
+
 
 // details
 udfName

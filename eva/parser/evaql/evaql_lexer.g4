@@ -27,6 +27,7 @@ ASC:                                 'ASC';
 BLOB:                                'BLOB';
 BY:                                  'BY';
 COLUMN:                              'COLUMN';
+CONSTRAINT:                          'CONSTRAINT';
 CREATE:                              'CREATE';
 DATABASE:                            'DATABASE';
 DEFAULT:                             'DEFAULT';
@@ -101,6 +102,13 @@ VIDEO:                'VIDEO';
 
 ERROR_BOUNDS:						 'ERROR_WITHIN';
 CONFIDENCE_LEVEL:					 'AT_CONFIDENCE';
+
+// Optimizer constraints
+
+MIN_ACCURACY:                        'MIN_ACCURACY';
+MAX_DEADLINE:                        'MAX_DEADLINE';
+FAVORS:                              'FAVORS';
+DEADLINE:                            'DEADLINE';
 
 // Index types
 BTREE:                               'BTREE';

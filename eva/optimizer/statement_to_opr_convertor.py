@@ -30,6 +30,7 @@ from eva.optimizer.operators import (
     LogicalQueryDerivedGet,
     LogicalRename,
     LogicalSample,
+    LogicalSetConstraint,
     LogicalShow,
     LogicalUnion,
     LogicalUpload,
@@ -45,6 +46,7 @@ from eva.parser.load_statement import LoadDataStatement
 from eva.parser.rename_statement import RenameTableStatement
 from eva.parser.select_statement import SelectStatement
 from eva.parser.show_statement import ShowStatement
+from eva.parser.set_constraint_statement import SetConstraintStatement
 from eva.parser.statement import AbstractStatement
 from eva.parser.table_ref import TableRef
 from eva.parser.upload_statement import UploadStatement
@@ -293,6 +295,11 @@ class StatementToPlanConvertor:
         show_opr = LogicalShow(statement.show_type)
         self._plan = show_opr
 
+    def visit_set_constraint(self, statement: SetConstraintStatement):
+        set_constraint_opr = LogicalSetConstraint(statement.min_accuracy, statement.max_deadline, statement.favors)
+        logger.warn("Set plan as {} with dict {}".format(set_constraint_opr,set_constraint_opr.__dict__))
+        self._plan = set_constraint_opr
+
     def visit(self, statement: AbstractStatement):
         """Based on the instance of the statement the corresponding
            visit is called.
@@ -323,6 +330,8 @@ class StatementToPlanConvertor:
             self.visit_materialized_view(statement)
         elif isinstance(statement, ShowStatement):
             self.visit_show(statement)
+        elif isinstance(statement, SetConstraintStatement):
+            self.visit_set_constraint(statement)
         return self._plan
 
     @property

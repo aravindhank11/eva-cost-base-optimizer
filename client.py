@@ -17,21 +17,23 @@ connection = connect(host = '127.0.0.0', port = 5432) # hostname, port of the se
 cursor = connection.cursor()
 
 # Drop a UDF
-exec("DROP UDF IF EXISTS Resnet50ObjectDetector")
+# exec("DROP UDF IF EXISTS SsdLiteObjectDetector")
 
-# Re-Create the UDF
-cmd = """
-CREATE UDF IF NOT EXISTS Resnet50ObjectDetector
-INPUT  (frame NDARRAY UINT8(3, ANYDIM, ANYDIM))
-OUTPUT (labels NDARRAY STR(ANYDIM), bboxes NDARRAY FLOAT32(ANYDIM, 4), scores NDARRAY FLOAT32(ANYDIM))
-TYPE ObjectDetection
-ACCURACY 100
-IMPL 'eva/udfs/object_detector.py';
-"""
-exec(cmd)
+# Create the UDF
+# cmd = "CREATE UDF IF NOT EXISTS MobilenetObjectDetector INPUT  (Frame_Array NDARRAY UINT8(3, ANYDIM, ANYDIM)) OUTPUT (labels NDARRAY STR(ANYDIM), bboxes NDARRAY FLOAT32(ANYDIM, 4), scores NDARRAY FLOAT32(ANYDIM)) TYPE ObjectDetection ACCURACY 80 IMPL 'eva/udfs/object_detector.py';"
+# exec(cmd)
+
+# cmd = "CREATE UDF IF NOT EXISTS SsdLiteObjectDetector INPUT  (Frame_Array NDARRAY UINT8(3, ANYDIM, ANYDIM)) OUTPUT (labels NDARRAY STR(ANYDIM), bboxes NDARRAY FLOAT32(ANYDIM, 4), scores NDARRAY FLOAT32(ANYDIM)) TYPE ObjectDetection ACCURACY 73 IMPL 'eva/udfs/object_detector.py';"
+# exec(cmd)
+
 
 # Upload the mnist video
-exec("LOAD FILE 'data/ua_detrac/ua_detrac.mp4' INTO ObjDetectionVid")
+# exec("LOAD FILE 'data/ua_detrac/ua_detrac.mp4' INTO ObjDetectionVid")
+
+exec("SET CONSTRAINT MIN_ACCURACY 70 MAX_DEADLINE 20 FAVORS ACCURACY")
 
 # Run the Image Classification UDF on video
-response = exec("SELECT data, Resnet50ObjectDetector(data) FROM ObjDetectionVid where id<2", True)
+# response = exec("SELECT data, FastRCNNObjectDetector(data) FROM ObjDetectionVid where id<5", True)
+exec("SELECT id, data FROM ObjDetectionVid WHERE id < 5 AND Array_Count(FastRCNNObjectDetector(data).labels, 'car') > 3");
+# response = exec("SELECT data, MobilenetObjectDetector(data) FROM ObjDetectionVid where id<5", True)
+# response = exec("SELECT data, SsdLiteObjectDetector(data) FROM ObjDetectionVid where id<5", True)

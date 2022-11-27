@@ -39,7 +39,7 @@ class SetConstraintExecutor(AbstractExecutor):
         pass
 
     def exec(self):
-        opt = UDFOptimizerConstraints()
-        opt.min_accuracy = self._node.min_accuracy
-        opt.max_deadline = self._max_deadline
-        opt.favors = self._favors
+        UDFOptimizerConstraints.min_accuracy(self._node.min_accuracy)
+        UDFOptimizerConstraints.max_deadline(self._max_deadline)
+        print("Setting favor = %s" %(self._favors))
+        UDFOptimizerConstraints.favors(self._favors)

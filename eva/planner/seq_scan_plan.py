@@ -15,6 +15,7 @@
 from typing import List
 
 from eva.expression.abstract_expression import AbstractExpression
+from eva.expression.function_expression import FunctionExpression
 from eva.planner.abstract_scan_plan import AbstractScan
 from eva.planner.types import PlanOprType
 
@@ -40,10 +41,17 @@ class SeqScanPlan(AbstractScan):
         self._columns = columns
         self.alias = alias
         super().__init__(PlanOprType.SEQUENTIAL_SCAN, predicate)
+        self.check_for_udf()
 
     @property
     def columns(self):
         return self._columns
+
+    def check_for_udf(self):
+        if self._columns:
+            for expr in self._columns:
+                if isinstance(expr, FunctionExpression):
+                    self.has_udf = True
 
     def __hash__(self) -> int:
         return hash((super().__hash__(), tuple(self.columns or []), self.alias))

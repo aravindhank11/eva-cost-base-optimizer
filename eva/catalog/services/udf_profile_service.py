@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from sqlalchemy.orm.exc import NoResultFound
+from eva.utils.generic_utils import path_to_class
 
 from eva.catalog.models.udf_profile import UdfProfileMetadata
 from eva.catalog.services.base_service import BaseService
@@ -59,6 +60,16 @@ class UdfProfileService(BaseService):
 
         self.print_all_profile("Post Dropping {}".format(udf_id))
         return return_val
+
+    def udf_within_deadline(self, list_of_udf_ids, time, cardinality):
+        udfs = []
+        for (udf_id, udf_name, impl_file_path, accuracy) in list_of_udf_ids:
+            func = path_to_class(impl_file_path, udf_name)()
+            selected_profiles = self.model.query.filter(self.model._udf_id == udf_id).filter(
+                self.model._time_taken * cardinality / self.model._batch_size <= time).all()
+            for profile in selected_profiles:
+                udfs.append((udf_name, profile._time_taken * cardinality / profile._batch_size, accuracy, func))
+        return udfs
 
     def print_all_profile(self, when=""):
         print(when)

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from eva.expression.abstract_expression import AbstractExpression
+from eva.expression.comparison_expression import ComparisonExpression
+from eva.expression.function_expression import FunctionExpression
 from eva.planner.abstract_plan import AbstractPlan
 from eva.planner.types import PlanOprType
 
@@ -27,6 +29,14 @@ class PredicatePlan(AbstractPlan):
     def __init__(self, predicate: AbstractExpression):
         self.predicate = predicate
         super().__init__(PlanOprType.PREDICATE_FILTER)
+        self.check_for_udf()
+
+    def check_for_udf(self):
+        if self.predicate:
+            if isinstance(self.predicate, FunctionExpression):
+                self.has_udf = True
+            if isinstance(self.predicate, ComparisonExpression):
+                self.has_udf = True
 
     def __hash__(self) -> int:
         return hash((super().__hash__(), self.predicate))

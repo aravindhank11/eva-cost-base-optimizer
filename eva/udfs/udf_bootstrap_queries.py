@@ -45,7 +45,7 @@ ArrayCount_udf_query = """CREATE UDF
             INPUT (Input_Array NDARRAY ANYTYPE, Search_Key ANYTYPE)
             OUTPUT (key_count INTEGER)
             TYPE NdarrayUDF
-            ACCURACY 0
+            ACCURACY 100
             IMPL "{}/udfs/{}/array_count.py";
         """.format(
     EVA_INSTALLATION_DIR, NDARRAY_DIR
@@ -72,16 +72,25 @@ Unnest_udf_query = """CREATE UDF IF NOT EXISTS Unnest
     EVA_INSTALLATION_DIR, NDARRAY_DIR
 )
 
+
+# Fastrcnn_udf_query = """CREATE UDF IF NOT EXISTS FastRCNNObjectDetector
+#       INPUT  (Frame_Array NDARRAY UINT8(3, ANYDIM, ANYDIM))
+#      OUTPUT (labels NDARRAY STR(ANYDIM), bboxes NDARRAY FLOAT32(ANYDIM, 4),
+#                scores NDARRAY FLOAT32(ANYDIM))
+#      TYPE ObjectDetection
+#      ACCURACY 95
+#      IMPL  '{}/udfs/fastrcnn_object_detector.py';
+#      """.format(
+#    EVA_INSTALLATION_DIR
+#)
+
 Fastrcnn_udf_query = """CREATE UDF IF NOT EXISTS FastRCNNObjectDetector
-      INPUT  (Frame_Array NDARRAY UINT8(3, ANYDIM, ANYDIM))
-      OUTPUT (labels NDARRAY STR(ANYDIM), bboxes NDARRAY FLOAT32(ANYDIM, 4),
-                scores NDARRAY FLOAT32(ANYDIM))
-      TYPE  Classification
-      ACCURACY 0
-      IMPL  '{}/udfs/fastrcnn_object_detector.py';
-      """.format(
-    EVA_INSTALLATION_DIR
-)
+INPUT  (Frame_Array NDARRAY UINT8(3, ANYDIM, ANYDIM))
+OUTPUT (labels NDARRAY STR(ANYDIM), bboxes NDARRAY FLOAT32(ANYDIM, 4), scores NDARRAY FLOAT32(ANYDIM))
+TYPE ObjectDetection
+ACCURACY 80
+IMPL 'eva/udfs/object_detector.py'; 
+"""
 
 
 def init_builtin_udfs(mode="debug"):
@@ -92,8 +101,9 @@ def init_builtin_udfs(mode="debug"):
     Arguments:
         mode (str): 'debug' or 'release'
     """
-    queries = [Fastrcnn_udf_query, ArrayCount_udf_query, Crop_udf_query]
-    queries.extend([DummyObjectDetector_udf_query, DummyMultiObjectDetector_udf_query])
+    queries = [ArrayCount_udf_query, Fastrcnn_udf_query] #, Crop_udf_query]
+    # queries.extend([DummyObjectDetector_udf_query, DummyMultiObjectDetector_udf_query])
 
     for query in queries:
+        print(query)
         execute_query_fetch_all(query)

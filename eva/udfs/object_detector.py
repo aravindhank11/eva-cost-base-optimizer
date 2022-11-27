@@ -24,6 +24,7 @@ import sys
 import cv2
 import importlib
 import warnings
+import torch
 warnings.filterwarnings("ignore", category=UserWarning)
 
 try:
@@ -63,6 +64,12 @@ class ObjectDetector(PytorchAbstractClassifierUDF):
         self.threshold = threshold
         self.model = self._torch_model(pretrained=True, progress=False)
         self.model.eval()
+
+    def generate_sample_input(self, batch):
+        expected_h = 960
+        expected_w = 540
+        expected_c = 3
+        return torch.rand(batch, expected_c, expected_w, expected_h)
 
     @property
     def input_format(self) -> FrameInfo:
@@ -203,6 +210,10 @@ class ObjectDetector(PytorchAbstractClassifierUDF):
                 ignore_index=True,
             )
         return outcome
+
+class FastRCNNObjectDetector(ObjectDetector):
+    def __init__(self):
+        super().__init__("fasterrcnn_resnet50_fpn")
 
 class Resnet50ObjectDetector(ObjectDetector):
     def __init__(self):

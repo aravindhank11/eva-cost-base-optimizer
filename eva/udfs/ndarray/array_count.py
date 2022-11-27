@@ -14,6 +14,7 @@
 # limitations under the License.
 import numpy as np
 import pandas as pd
+import pickle
 
 from eva.udfs.abstract.abstract_udf import AbstractUDF
 
@@ -25,6 +26,9 @@ class Array_Count(AbstractUDF):
 
     def setup(self):
         pass
+
+    def generate_sample_input(self, batch):
+        return pd.concat([pd.Series(np.random.rand(batch, 20).tolist()), pd.Series(np.random.rand(batch).tolist())], axis=1)
 
     def forward(self, inp: pd.DataFrame) -> pd.DataFrame:
         """
@@ -47,6 +51,8 @@ class Array_Count(AbstractUDF):
         1   int
 
         """
+        with open ("/home/ak/dump", "wb") as h:
+            pickle.dump(inp, h)
         # sanity check
         if len(inp.columns) != 2:
             raise ValueError("input contains more than one column")

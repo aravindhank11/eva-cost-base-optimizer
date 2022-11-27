@@ -77,6 +77,9 @@ class FunctionExpression(AbstractExpression):
     def function(self, func: Callable):
         self._function = func
 
+    def set_name(self, name):
+        self._name = name
+
     def evaluate(self, batch: Batch, **kwargs) -> Batch:
         new_batch = batch
         child_batches = [child.evaluate(batch, **kwargs) for child in self.children]
